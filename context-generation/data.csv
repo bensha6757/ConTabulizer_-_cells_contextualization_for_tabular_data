@@ -1,0 +1,100 @@
+text,headlines
+stephen curry # points # 40 # nba season statistics,stephen curry scored 40 points
+stephen curry # minutes # 20 # nba season statistics,stephen curry played 20 minutes
+stephen curry # starter  # yes # nba season statistics,stephen curry is a starter
+kevin durant # starter  # no # nba season statistics,stephen curry did not start
+stephen curry # assistes # 10 # nba season statistics,stephen curry passed 10 assists
+stephen curry # rebounds # 2 # nba season statistics,stephen curry had 2 rebounds
+stephen curry # turnovers # 13 # nba season statistics,stephen curry committed 13 turnovers
+stephen curry # is home # yes # nba season statistics,stephen curry played at home
+lebron james # is home # no # nba season statistics,lebron james played for the visiting team
+philadelphia # is home # yes # nba season statistics,philadelphia played at home
+new york # is home # no # nba season statistics,new york was the visitors
+philadelphia # team points quarter 1 # 27 # nba season statistics,philadelphia scored 27 points in quarter 1
+philadelphia # team losses # 10 # nba season statistics,philadelphia has 10 losses
+philadelphia # team wins # 20 # nba season statistics,philadelphia has 20 wins
+johnson # first name # tom # contact information,johnson's first name is tom
+tom # last name # johnson # contact information,tom's last name is johnson
+johnson # country # france # contact information,johnson is from france
+johnson # birthday # 8/13/1995 # contact information,johnson's birthday is on 8/13/1995
+johnson # phone number # 0526966001 # contact information,johnson's phone number is 0526966001
+johnson # email # johnson@gmail.com # contact information,johnson's email is johnson@gmail.com
+ben shapira # amount purchased # 12 # buyers list,ben shapira purchased 12 units
+ben shapira # date of purchase # 8/19/2017 # buyers list,ben shapira's purchase date was 8/19/2017
+ben shapira # product # cake # buyers list,ben shapira purchased a cake
+ben shapira # price # 1.5 $ # buyers list,ben shapira paid 1.5 $
+doughnut # quantity sold # 560 # coffee products sales analysis,560 doughnuts were sold
+cupcakes # quantity sold # 286 # coffee products sales analysis,286 cupcakes were sold
+cupcakes # month # january # coffee products sales analysis,cupcakes were sold on january
+"cupcakes # price # 0,85 $ # coffee products sales analysis","cupcakes cost 0,85 $"
+cupcakes # quantity in stock # 3000 # coffee products sales analysis,there are 3000 cupcakes in stock
+donald # department # finance # employees list,donald is from the finance department
+donald # location # israel # employees list,donald is located in israel
+diego # title # full stack engineer at algosec # linkedin details,diego's title is: full stack engineer at algosec
+diego # employment type # part-time # linkedin details,diego works in a part-time job
+carlos # employment type # freelancer # linkedin details,carlos works as a freelancer
+ronald # employment type # full-time # linkedin details,ronald works in a full-time job
+diego # company name # algosec # linkedin details,diego works in a company called algosec
+diego # company location # israel # linkedin details,diego works in a company located in israel
+diego # start date # october 2020 # linkedin details,diego started working in october 2020
+diego # end date # august 20202 # linkedin details,diego's work ended in august 2022
+diego # industry # computer software # linkedin details,diego's company is from the computer software industry
+diego # description # diego is a highly motivated student who wants to explore the software field. # linkedin details,diego's description is: diego is a highly motivated student who wants to explore the software field.
+"diego # skills # coding, analysis, frontend # linkedin details","diego's skills are: coding, analysis, frontend"
+diego # education # bachelor of science # linkedin details,diego's education is bachelor of science
+alex # january # 14 # sales report,alex sold 14 units in january
+alex # march # 27 # sales report,alex sold 27 units in march
+alex # april # 93 # sales report,alex sold 93 units in april
+alex # june # 95 # sales report,alex sold 95 units in june
+t-mobile communications # account name # loyal3 # financial protfolio analysis,t-mobile communications's account name is loyal3
+t-mobile communications # stock price # 42.49$ # financial protfolio analysis,t-mobile communications's stock price is 42.49$
+tokyo # country # japan # list of largest cities,tokyo is a city in japan
+"tokyo # un 2018 population estimates # 37,468,000 # list of largest cities","the population estimates in tokyo is 37,468,000 according to un 2018"
+"tokyo # density # 6,169 # list of largest cities","the density in tokyo is 6,169"
+"tokyo # area # 2,191 # list of largest cities","tokyo's area is 2,191"
+jerusalem # country/territory # israel # list of national capitals,jerusalem is the capital of israel
+abuja # notes # lagos was the capital from 1914 to 1991 # list of national capitals,notes regarding abuja: lagos was the capital from 1914 to 1991
+facebook # company # meta # list of social platforms with at least 100 million active users,facebook is a social platform of the company meta
+youtube # company # alphabet # list of social platforms with at least 100 million active users,youtube is a social platform of the company alphabet
+facebook # country # united states # list of social platforms with at least 100 million active users,facebook was created in united states
+facebook # launched # 2004 # list of social platforms with at least 100 million active users,facebook was launched in 2004
+facebook # monthly active users # 2.91 billion # list of social platforms with at least 100 million active users,facebook has 2.91 billion monthly active users
+facebook # other metrics # 1.93 billion daily active users # list of social platforms with at least 100 million active users,other metrics regarding facebook: 1.93 billion daily active users
+abyssinian # location of origin # unspecified # list of cat breeds,the location of origin of the abyssinian is unspecified
+abyssinian # body type # semi-foreign # list of cat breeds,the abyssinian has a semi-foreign body type
+abyssinian # coat type and length # short # list of cat breeds,the coat type and length of the abyssinian is short
+abyssinian # coat pattern # ticked tabby # list of cat breeds,the abyssinian has a ticked tabby coat pattern
+samoa # government type # unitary state # governments in countries,the government type of samoa is unitary state
+bob loughman # birth date # 3/8/1961 # presidents,bob loghman was born on 3/8/1961
+"oman # area # 309,500 km squared # countries by population","the area of oman is 309,500 km squared"
+"guyana # population # 743,700 # countries by population","the population of guyana is 743,700"
+libya # capital # tripoli # countries by population,tripoli is the capital of libya
+michel aoun # place of birth # lebanon # presidents,michel aoun was born in lebanon
+hage geingob # country # namibia # presidents,hage geingob is the president of namibia
+david # age # 36 # employees salary,david is 36 years old
+david # salary # 26500 # employees salary,david's salary is 26500
+higgs boson # features # 30 # description of datasets,the number of features in the higgs boson dataset is 30
+higgs boson # classes # 2 # description of datasets,there are 2 classes in the higgs boson dataset
+higgs boson # samples # 800k # description of datasets,the higgs boson dataset contains 800k samples
+higgs boson # source # kaggle # description of datasets,the source of the higgs boson dataset is kaggle
+higgs boson # paper # tabnet # description of datasets,the higgs boson dataset was introduced in the tabnet paper
+person a # age # 30 # uci-bank,person a is 30 years old
+person a # marital # married # uci-bank,person a's marital status is married
+person a # education # primary # uci-bank,person a has a primary education
+person a # balance # 1787 # uci-bank,person a's account balance is 1787
+person a # housing # no # uci-bank,person a doesn't have a house
+person b # housing # yes # uci-bank,person b has a house
+epoch 1 # train loss # 0.87 # machine learning training progress,the training loss during epoch 1 was 0.87
+epoch 1 # accuracy # 0.5 # machine learning training progress,the accuracy during epoch 1 was 0.5
+epoch 1 # time # 0.02 # machine learning training progress,epoch 1 took 0.02 seconds
+order 1 # salesperson # fuller # orders list,fuller is the salesperson in charge of order 1
+order 1 # order date # 1/1/2011 # orders list,order 1 was made on 1/1/2011
+order 1 # units # 13 # orders list,order 1 contains 13 units
+plastic 1 # acetone # no effect # plastic types test,acetone has no effect on plastic 1
+plastic 1 # flame test # green color # plastic types test,a green color appeared during the flame test on plastic 1
+plastic 1 # heat # softens # plastic types test,plastic 1 softens when exposed to heat
+70 - 80 # number of male students # 7 # exam grades distribution,7 male students received a grade between 70 - 80 on the exam
+70 - 80 # number of female students # 10 # exam grades distribution,10 female students received a grade between 70 - 80 on the exam
+failed # total # 51 # exam grades distribution,51 students have failed the exam
+bubblesort.java # description # implementation of the bubble sort algorithm for sorting an array # description of the 10 original java classes in the generated dataset,the description of the file bubblesort.java is: implementation of the bubble sort algorithm for sorting an array
+bubblesort.java # # fields # 5 # description of the 10 original java classes in the generated dataset,the class bubblesort contains 5 fields
