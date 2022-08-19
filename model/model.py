@@ -1,16 +1,10 @@
 import math
 
 import numpy as np
-import torch
 import pandas
-import transformers
-import datasets
-import openai
-import openml
 import torch
-from torch import nn, einsum
-import numpy as np
 from einops import rearrange
+from torch import nn, einsum
 
 
 class Residual(nn.Module):
@@ -197,11 +191,12 @@ class Transformer(nn.Module):
             x = attn(x)
             x = ff(x)
         return x
+
+
 import sklearn.datasets
 import sklearn.utils
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from typing import Any, List, Literal, Optional, Union, cast
+from typing import cast
+
 
 def _fetch_openml(data_id: int) -> sklearn.utils.Bunch:
     bunch = cast(
