@@ -12,13 +12,16 @@ class Embedder:
         self.encoder_tokenizer = BertTokenizer.from_pretrained(encoder_name)
 
     def forward(self, dataset_holder: DatasetHolder):
-        self.generate_encoding()
-        self.generate_template_sentences(dataset_holder)
+        table = self.generate_template_sentences(dataset_holder)
+        return self.generate_encoding(table)
 
     def generate_encoding(self, table_content):
         encodings_by_row = []
         for row in table_content:
-            tokenized_row = self.encoder_tokenizer.batch_encode_plus(row)
+            tokenized_row = self.encoder_tokenizer.batch_encode_plus(row,
+                                                                     padding='max_length',
+                                                                     return_tensors='pt',
+                                                                     add_special_tokens=True)
             last_hidden_state = self.encoder(tokenized_row).last_hidden_state
             entries_encoding = last_hidden_state[:, 0, :].squeeze(1).unsqueeze(0)
             encodings_by_row.append(entries_encoding)
@@ -38,9 +41,10 @@ class Embedder:
         table = prepare_table_for_template_generator(dataset_holder)
         templates_table = []
         for row in table:
-            source_encoding = self.template_generator_tokenizer(row, padding='max_length', return_tensors='pt',
-                                                                add_special_tokens=True)
-
+            source_encoding = self.template_generator_tokenizer.batch_encode_plus(row,
+                                                                                  padding='max_length',
+                                                                                  return_tensors='pt',
+                                                                                  add_special_tokens=True)
             generation_output = self.template_generator.generate(
                 input_ids=source_encoding['input_ids'].to(self.device),
                 attention_mask=source_encoding['attention_mask'].to(self.device),
@@ -52,9 +56,7 @@ class Embedder:
                 use_cache=True,
                 return_dict_in_generate=True,
             )
-
             generated_ids = generation_output.sequences
-
             preds = [
                 self.template_generator_tokenizer.decode(generated_id,
                                                          skip_special_tokens=True,
