@@ -296,7 +296,6 @@ def fine_tune_t5_to_generate_sentences_given_row_col_names_and_cell_value():
         "SEED": 42,  # set seed for reproducibility
     }
 
-
     T5Trainer(
         dataframe=df,
         source_text="text",

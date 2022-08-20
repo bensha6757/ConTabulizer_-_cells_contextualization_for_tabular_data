@@ -167,52 +167,27 @@ class BertAttention(nn.Module):
 
 
 # transformer
-class Transformer(nn.Module):
-    def __init__(self, dim, num_transformer_blocks, heads, dim_head, attn_dropout, ff_dropout):
+class ConTabulizer(nn.Module):
+    def __init__(self, dim, nfeats, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout,
+                 ff_dropout):
         super().__init__()
         self.layers = nn.ModuleList([])
-        config = {
-            'hidden_size': dim,
-            'num_attention_heads': heads,
-            'attention_probs_dropout_prob': attn_dropout,
-            'max_position_embeddings': 5,
-            'is_decoder': False
-        }
         for _ in range(num_transformer_blocks):
             self.layers.append(nn.ModuleList([
-                PreNorm(dim, Residual(Attention(dim, heads=heads, dim_head=dim_head, dropout=attn_dropout))),
+                PreNorm(dim, Residual(Attention(dim, heads=heads, dim_head=row_dim_head, dropout=attn_dropout))),
                 PreNorm(dim, Residual(FeedForward(dim, dropout=ff_dropout))),
+                PreNorm(dim * nfeats,
+                        Residual(Attention(dim * nfeats, heads=heads, dim_head=table_dim_head, dropout=attn_dropout))),
+                PreNorm(dim * nfeats, Residual(FeedForward(dim * nfeats, dropout=ff_dropout))),
             ]))
 
     def forward(self, x):
-        for attn, ff in self.layers:
-            x = attn(x)
-            x = ff(x)
+        x_shape = x.shape
+        for row_attn, ff1, table_attn, ff2 in self.layers:
+            x = row_attn(x)
+            x = ff1(x)
+            x = x.view(-1, x.shape[-1]).unsqueeze(0)
+            x = table_attn(x)
+            x = x.view(*x_shape)
+            x = ff2(x)
         return x
-
-
-import sklearn.datasets
-import sklearn.utils
-from typing import cast
-
-
-def _fetch_openml(data_id: int) -> sklearn.utils.Bunch:
-    bunch = cast(
-        sklearn.utils.Bunch,
-        sklearn.datasets.fetch_openml(data_id=data_id, as_frame=True),
-    )
-    return bunch
-
-
-if __name__ == '__main__':
-    datax = np.load('../train-data/churn_roc/X_num_train.npy')
-    dataidx = np.load('../train-data/churn_roc/idx_train.npy')
-    datay = np.load('../train-data/churn_roc/y_train.npy')
-    dataxcat = np.load('../train-data/churn_roc/X_cat_train.npy')
-    b = _fetch_openml(1477)
-    b2 = _fetch_openml(4538)
-    dfx = pandas.DataFrame(datax)
-    dfidx = pandas.DataFrame(dataidx)
-    dfy = pandas.DataFrame(datay)
-    dfxcat = pandas.DataFrame(dataxcat)
-    print()
