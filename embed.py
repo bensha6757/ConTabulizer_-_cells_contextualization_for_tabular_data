@@ -1,6 +1,6 @@
-import pandas as pd
 from transformers import T5ForConditionalGeneration, BertModel, BertTokenizer, T5Tokenizer
 import torch
+from datasets import DatasetHolder
 
 
 class Embedder:
@@ -11,8 +11,9 @@ class Embedder:
         self.encoder = BertModel.from_pretrained(encoder_name).to(self.device)
         self.encoder_tokenizer = BertTokenizer.from_pretrained(encoder_name)
 
-    def forward(self, table_name, data):
+    def forward(self, dataset_holder: DatasetHolder):
         self.generate_encoding()
+        self.generate_template_sentences(dataset_holder)
 
     def generate_encoding(self, table_content):
         encodings_by_row = []
@@ -33,4 +34,45 @@ class Embedder:
             device += ":" + str(curr_cuda)
         return device
 
+    def generate_template_sentences(self, dataset_holder: DatasetHolder):
+        table = prepare_table_for_template_generator(dataset_holder)
+        templates_table = []
+        for row in table:
+            source_encoding = self.template_generator_tokenizer(row, padding='max_length', return_tensors='pt',
+                                                                add_special_tokens=True)
 
+            generation_output = self.template_generator.generate(
+                input_ids=source_encoding['input_ids'].to(self.device),
+                attention_mask=source_encoding['attention_mask'].to(self.device),
+                num_beams=1,
+                max_length=10,
+                repetition_penalty=2.5,
+                length_penalty=1.0,
+                early_stopping=True,
+                use_cache=True,
+                return_dict_in_generate=True,
+            )
+
+            generated_ids = generation_output.sequences
+
+            preds = [
+                self.template_generator_tokenizer.decode(generated_id,
+                                                         skip_special_tokens=True,
+                                                         clean_up_tokenization_spaces=True)
+                for generated_id in generated_ids
+            ]
+            templates_table.append(preds)
+
+        return templates_table
+
+
+def prepare_table_for_template_generator(dataset_holder: DatasetHolder):
+    row_names = dataset_holder.row_names
+    col_names = dataset_holder.col_names
+    table_content = dataset_holder.table_content
+
+    for row_idx, row in enumerate(table_content):
+        for col_idx, cell_value in enumerate(row):
+            table_content[row_idx][col_idx] = \
+                row_names[row_idx] + ' # ' + col_names[col_idx] + ' # ' + cell_value + ' # ' + dataset_holder.table_name
+    return table_content

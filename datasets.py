@@ -15,7 +15,7 @@ class DatasetHolder:
             self.row_names = []
             self.col_names = []
             self.table_content = []
-            with open(path, newline='') as csvfile:
+            with open(path, newline='', encoding='utf-8') as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
                 for i, row in enumerate(reader):
                     if i == 0:
@@ -35,8 +35,8 @@ class DatasetHolder:
     def get_dataset_holder_crop(self, start, end):
         cropped_row_names = self.row_names[start: end]
         cropped_table_content = self.table_content[start: end]
-        return DatasetHolder(self.table_name, row_names=cropped_row_names, col_names=self.col_names, table_content=cropped_table_content)
-
+        return DatasetHolder(self.table_name, row_names=cropped_row_names, col_names=self.col_names,
+                             table_content=cropped_table_content)
 
 
 class DatasetCropper(Dataset):
@@ -66,6 +66,3 @@ class DatasetsWrapper:
         dataset_files = glob.glob(datasets_path)
         self.datasets = [DatasetCropper(dataset_path, self.number_of_records_per_crop, '', self.is_shuffle) for
                          dataset_path in dataset_files]
-
-
-d = DatasetHolder('train-data/csvs/churn-modelling/Churn_Modelling.csv')
