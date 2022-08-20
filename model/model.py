@@ -184,9 +184,7 @@ class Transformer(nn.Module):
                 PreNorm(dim, Residual(FeedForward(dim, dropout=ff_dropout))),
             ]))
 
-    def forward(self, x, x_cont=None):
-        if x_cont is not None:
-            x = torch.cat((x, x_cont), dim=1)
+    def forward(self, x):
         for attn, ff in self.layers:
             x = attn(x)
             x = ff(x)
