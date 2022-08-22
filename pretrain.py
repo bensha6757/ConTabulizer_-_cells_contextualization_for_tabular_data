@@ -1,102 +1,90 @@
-import torch
-from torch import nn
-
-from data_openml import data_prep_openml, task_dset_ids, DataSetCatCon
+import pytorch_lightning as pl
+from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.utils.data import DataLoader
-import torch.optim as optim
-from augmentations import embed_data_mask
-from augmentations import add_noise
 
-import os
-import numpy as np
+from datasets import DatasetCropper, DatasetHolder, DatasetsWrapper
+from model.model import ConTabulizer, ConTabulizerForGeneration
+from embed import Embedder
+from transformers import T5ForConditionalGeneration, Adafactor
 
 
-def pretrain(model, cat_idxs, X_train, y_train, continuous_mean_std, opt, device):
-    train_ds = DataSetCatCon(X_train, y_train, cat_idxs, opt.dtask, continuous_mean_std)
-    trainloader = DataLoader(train_ds, batch_size=opt.batchsize, shuffle=True, num_workers=4)
-    vision_dset = opt.vision_dset
-    optimizer = optim.AdamW(model.parameters(), lr=0.0001)
-    pt_aug_dict = {
-        'noise_type': opt.pt_aug,
-        'lambda': opt.pt_aug_lam
-    }
-    criterion1 = nn.CrossEntropyLoss()
-    criterion2 = nn.MSELoss()
-    print("Pretraining begins!")
-    for epoch in range(opt.pretrain_epochs):
-        model.train()
-        running_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
-            optimizer.zero_grad()
-            x_categ, x_cont, _, cat_mask, con_mask = data[0].to(device), data[1].to(device), data[2].to(device), data[
-                3].to(device), data[4].to(device)
+class PlConTabulizer(pl.LightningModule):
+    def __init__(self, t5_for_generation, t5_for_template_generation, generator_name, encoder_name, dim, nfeats,
+                 num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout,
+                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        embedder = Embedder(t5_for_template_generation, generator_name, encoder_name)
+        contabulizer_model = ConTabulizer(dim, nfeats, num_transformer_blocks, heads, row_dim_head,
+                                          table_dim_head, attn_dropout, ff_dropout)
+        t5_model = T5ForConditionalGeneration.from_pretrained(t5_for_generation)
+        self.model = ConTabulizerForGeneration(embedder=embedder, model=contabulizer_model, t5_model=t5_model)
 
-            # embed_data_mask function is used to embed both categorical and continuous data.
-            if 'cutmix' in opt.pt_aug:
-                from augmentations import add_noise
-                x_categ_corr, x_cont_corr = add_noise(x_categ, x_cont, noise_params=pt_aug_dict)
-                _, x_categ_enc_2, x_cont_enc_2 = embed_data_mask(x_categ_corr, x_cont_corr, cat_mask, con_mask, model,
-                                                                 vision_dset)
-            else:
-                _, x_categ_enc_2, x_cont_enc_2 = embed_data_mask(x_categ, x_cont, cat_mask, con_mask, model,
-                                                                 vision_dset)
-            _, x_categ_enc, x_cont_enc = embed_data_mask(x_categ, x_cont, cat_mask, con_mask, model, vision_dset)
+    def forward(self, dataset_holder):
+        self.model(dataset_holder)
 
-            if 'mixup' in opt.pt_aug:
-                from augmentations import mixup_data
-                x_categ_enc_2, x_cont_enc_2 = mixup_data(x_categ_enc_2, x_cont_enc_2, lam=opt.mixup_lam)
-            loss = 0
-            if 'contrastive' in opt.pt_tasks:
-                aug_features_1 = model.transformer(x_categ_enc, x_cont_enc)
-                aug_features_2 = model.transformer(x_categ_enc_2, x_cont_enc_2)
-                aug_features_1 = (aug_features_1 / aug_features_1.norm(dim=-1, keepdim=True)).flatten(1, 2)
-                aug_features_2 = (aug_features_2 / aug_features_2.norm(dim=-1, keepdim=True)).flatten(1, 2)
-                if opt.pt_projhead_style == 'diff':
-                    aug_features_1 = model.pt_mlp(aug_features_1)
-                    aug_features_2 = model.pt_mlp2(aug_features_2)
-                elif opt.pt_projhead_style == 'same':
-                    aug_features_1 = model.pt_mlp(aug_features_1)
-                    aug_features_2 = model.pt_mlp(aug_features_2)
-                else:
-                    print('Not using projection head')
-                logits_per_aug1 = aug_features_1 @ aug_features_2.t() / opt.nce_temp
-                logits_per_aug2 = aug_features_2 @ aug_features_1.t() / opt.nce_temp
-                targets = torch.arange(logits_per_aug1.size(0)).to(logits_per_aug1.device)
-                loss_1 = criterion1(logits_per_aug1, targets)
-                loss_2 = criterion1(logits_per_aug2, targets)
-                loss = opt.lam0 * (loss_1 + loss_2) / 2
-            elif 'contrastive_sim' in opt.pt_tasks:
-                aug_features_1 = model.transformer(x_categ_enc, x_cont_enc)
-                aug_features_2 = model.transformer(x_categ_enc_2, x_cont_enc_2)
-                aug_features_1 = (aug_features_1 / aug_features_1.norm(dim=-1, keepdim=True)).flatten(1, 2)
-                aug_features_2 = (aug_features_2 / aug_features_2.norm(dim=-1, keepdim=True)).flatten(1, 2)
-                aug_features_1 = model.pt_mlp(aug_features_1)
-                aug_features_2 = model.pt_mlp2(aug_features_2)
-                c1 = aug_features_1 @ aug_features_2.t()
-                loss += opt.lam1 * torch.diagonal(-1 * c1).add_(1).pow_(2).sum()
-            if 'denoising' in opt.pt_tasks:
-                cat_outs, con_outs = model(x_categ_enc_2, x_cont_enc_2)
-                # if con_outs.shape(-1) != 0:
-                # import ipdb; ipdb.set_trace()
-                if len(con_outs) > 0:
-                    con_outs = torch.cat(con_outs, dim=1)
-                    l2 = criterion2(con_outs, x_cont)
-                else:
-                    l2 = 0
-                l1 = 0
-                # import ipdb; ipdb.set_trace()
-                n_cat = x_categ.shape[-1]
-                for j in range(1, n_cat):
-                    l1 += criterion1(cat_outs[j], x_categ[:, j])
-                loss += opt.lam2 * l1 + opt.lam3 * l2
-            loss.backward()
-            optimizer.step()
-            running_loss += loss.item()
+    def training_step(self, batch):
+        dataset_holder = batch
+        loss, outputs = self(dataset_holder)
+        self.log("train loss", loss, prog_bar=True, logger=True)
+        return loss
 
-        print(f'Epoch: {epoch}, Running Loss: {running_loss}')
+    def validation_step(self, batch):
+        dataset_holder = batch
+        loss, outputs = self(dataset_holder)
+        self.log("val loss", loss, prog_bar=True, logger=True)
+        return loss
 
-    print('END OF PRETRAINING!')
-    return model
-    # if opt.active_log:
-    #     wandb.log({'pt_epoch': epoch ,'pretrain_epoch_loss': running_loss
-    #     })
+    def configure_optimizers(self):
+        return Adafactor(
+            self.model.parameters(),
+            lr=1e-3,
+            relative_step=False,
+            scale_parameter=False,
+            warmup_init=False,
+        )
+
+
+class TableDataModule(pl.LightningDataModule):
+    def __init__(self, train_dataset_path: DatasetsWrapper, dev_dataset_path: DatasetsWrapper,
+                 number_of_records_per_crop: int = 10, batch_size: int = 1, is_shuffle=True):
+        super(TableDataModule, self).__init__()
+
+        self.train_set = DatasetsWrapper(train_dataset_path, number_of_records_per_crop, is_shuffle)
+        self.dev_set = DatasetsWrapper(dev_dataset_path, number_of_records_per_crop, is_shuffle=is_shuffle)
+        self.batch_size = batch_size
+
+    def train_dataloader(self):
+        return DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True)
+
+    def val_dataloader(self):
+        return DataLoader(self.dev_set, batch_size=self.batch_size)
+
+
+if __name__ == '__main__':
+    train_dataset_holder = DatasetHolder()
+    dev_dataset_holder = DatasetHolder()
+    table_data_module = TableDataModule(train_dataset_holder, dev_dataset_holder)
+    model = PlConTabulizer()
+
+    wandb_logger = WandbLogger(
+        name="",
+        project="",
+        entity="roicohen9"
+    )
+
+    val_loss_checkpoint_callback = ModelCheckpoint(monitor="val loss", mode="min")
+
+    gpus = 1
+    train_strategy = 'ddp_sharded'
+
+    trainer = pl.Trainer(
+        max_epochs=6,
+        gpus=gpus,
+        num_nodes=1,
+        strategy=train_strategy,
+        # precision=16,
+        logger=wandb_logger,
+        callbacks=[val_loss_checkpoint_callback]
+    )
+    trainer.fit(model, table_data_module)

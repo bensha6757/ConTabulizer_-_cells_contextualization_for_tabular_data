@@ -1,10 +1,12 @@
 from transformers import T5ForConditionalGeneration, BertModel, BertTokenizer, T5Tokenizer
 import torch
 from datasets import DatasetHolder
+from torch import nn
 
 
-class Embedder:
+class Embedder(nn.Module):
     def __init__(self, t5_for_template_generation, generator_name, encoder_name):
+        super().__init__()
         self.device = self.get_curr_device()
         self.template_generator = T5ForConditionalGeneration.from_pretrained(t5_for_template_generation).to(self.device)
         self.template_generator_tokenizer = T5Tokenizer.from_pretrained(generator_name)

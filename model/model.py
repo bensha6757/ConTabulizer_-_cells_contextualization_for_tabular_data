@@ -166,7 +166,6 @@ class BertAttention(nn.Module):
         return outputs
 
 
-# transformer
 class ConTabulizer(nn.Module):
     def __init__(self, dim, nfeats, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout,
                  ff_dropout):
@@ -191,3 +190,16 @@ class ConTabulizer(nn.Module):
             x = x.view(*x_shape)
             x = ff2(x)
         return x
+
+
+class ConTabulizerForGeneration(nn.Module):
+    def __init__(self, embedder, model, t5_model):
+        super().__init__()
+        self.embedder = embedder
+        self.model = model
+        self.t5_model = t5_model
+
+    def forward(self, dataset_holder):
+        x = self.embedder(dataset_holder)
+        x = self.model(x)
+        return self.t5_model(encoder_outputs=x)

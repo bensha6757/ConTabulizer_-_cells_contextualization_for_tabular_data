@@ -1,3 +1,5 @@
+import math
+
 from torch.utils.data import Dataset
 import csv
 import glob
@@ -47,7 +49,7 @@ class DatasetCropper(Dataset):
             self.dataset_holder.shuffle()
 
     def __len__(self):
-        return len(self.dataset_holder) / self.number_of_records_per_crop
+        return math.ceil(len(self.dataset_holder) / self.number_of_records_per_crop)
 
     def __getitem__(self, idx):
         start = idx * self.number_of_records_per_crop
@@ -55,14 +57,31 @@ class DatasetCropper(Dataset):
         return self.dataset_holder.get_dataset_holder_crop(start, end)
 
 
-class DatasetsWrapper:
+class DatasetsWrapper(Dataset):
     def __init__(self, datasets_path, number_of_records_per_crop, is_shuffle=True):
         self.datasets = []
         self.read_datasets(datasets_path)
         self.number_of_records_per_crop = number_of_records_per_crop
         self.is_shuffle = is_shuffle
+        self.datasets_lens = []
+        lens = 0
+        for dataset in self.datasets:
+            lens += len(dataset)
+            self.datasets_lens.append(lens)
+
+    def __len__(self):
+        return sum([len(dataset) for dataset in self.datasets])
+
+    def __getitem__(self, idx):
+        for i, dataset_len in enumerate(self.datasets_lens):
+            if idx < dataset_len:
+                return self.datasets[i][idx - (self.datasets_lens[i - 1] if i != 0 else 0)]
 
     def read_datasets(self, datasets_path):
-        dataset_files = glob.glob(datasets_path)
-        self.datasets = [DatasetCropper(dataset_path, self.number_of_records_per_crop, '', self.is_shuffle) for
-                         dataset_path in dataset_files]
+        dataset_files_dirs = glob.glob(datasets_path)
+        for dataset_dir in dataset_files_dirs:
+            for file_path in glob.glob(dataset_dir):
+                if file_path.endswith('.csv'):
+                    dataset_holder = DatasetHolder(table_name=dataset_dir.split('/')[-1], path=file_path)
+                    dataset_cropper = DatasetCropper(dataset_holder, self.number_of_records_per_crop, self.is_shuffle)
+                    self.datasets.append(dataset_cropper)
