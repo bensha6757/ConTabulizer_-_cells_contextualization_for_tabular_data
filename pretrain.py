@@ -3,18 +3,18 @@ from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.utils.data import DataLoader
 
-from datasets import DatasetCropper, DatasetHolder, DatasetsWrapper
+from datasets import DatasetsWrapper
 from model.model import ConTabulizer, ConTabulizerForGeneration
 from embed import Embedder
 from transformers import T5ForConditionalGeneration, Adafactor
 
 
 class PlConTabulizer(pl.LightningModule):
-    def __init__(self, t5_for_generation, t5_for_template_generation, generator_name, encoder_name, dim, nfeats,
-                 num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout,
+    def __init__(self, t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name,
+                 dim, nfeats, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
-        embedder = Embedder(t5_for_template_generation, generator_name, encoder_name)
+        embedder = Embedder(finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name)
         contabulizer_model = ConTabulizer(dim, nfeats, num_transformer_blocks, heads, row_dim_head,
                                           table_dim_head, attn_dropout, ff_dropout)
         t5_model = T5ForConditionalGeneration.from_pretrained(t5_for_generation)
@@ -41,17 +41,22 @@ class PlConTabulizer(pl.LightningModule):
             lr=1e-3,
             relative_step=False,
             scale_parameter=False,
-            warmup_init=False,
+            warmup_init=False
         )
 
 
 class TableDataModule(pl.LightningDataModule):
-    def __init__(self, train_dataset_path: DatasetsWrapper, dev_dataset_path: DatasetsWrapper,
-                 number_of_records_per_crop: int = 10, batch_size: int = 1, is_shuffle=True):
+    def __init__(self, datasets_path, number_of_records_per_crop: int = 10, batch_size: int = 1, is_shuffle=True):
         super(TableDataModule, self).__init__()
 
-        self.train_set = DatasetsWrapper(train_dataset_path, number_of_records_per_crop, is_shuffle)
-        self.dev_set = DatasetsWrapper(dev_dataset_path, number_of_records_per_crop, is_shuffle=is_shuffle)
+        self.train_set = DatasetsWrapper(datasets_path=datasets_path,
+                                         number_of_records_per_crop=number_of_records_per_crop,
+                                         train_or_val='train',
+                                         is_shuffle=is_shuffle)
+        self.dev_set = DatasetsWrapper(datasets_path=datasets_path,
+                                       number_of_records_per_crop=number_of_records_per_crop,
+                                       train_or_val='val',
+                                       is_shuffle=is_shuffle)
         self.batch_size = batch_size
 
     def train_dataloader(self):
@@ -62,10 +67,25 @@ class TableDataModule(pl.LightningDataModule):
 
 
 if __name__ == '__main__':
-    train_dataset_holder = DatasetHolder()
-    dev_dataset_holder = DatasetHolder()
-    table_data_module = TableDataModule(train_dataset_holder, dev_dataset_holder)
-    model = PlConTabulizer()
+    datasets_dir = 'train-data/csvs'
+    number_of_records_per_crop = 10
+    is_shuffle = True
+
+    table_data_module = TableDataModule(datasets_path=datasets_dir,
+                                        number_of_records_per_crop=number_of_records_per_crop,
+                                        is_shuffle=is_shuffle)
+    model = PlConTabulizer(t5_for_generation='t5-small',
+                           finetuned_t5_for_template_generation='t5-base',
+                           template_tokenizer_name='t5-base',
+                           template_encoder_name='bert-base-uncased',
+                           dim=768,
+                           nfeats=4,
+                           num_transformer_blocks=4,
+                           heads=8,
+                           row_dim_head=16,
+                           table_dim_head=16,
+                           attn_dropout=0.1,
+                           ff_dropout=0.1)
 
     wandb_logger = WandbLogger(
         name="",

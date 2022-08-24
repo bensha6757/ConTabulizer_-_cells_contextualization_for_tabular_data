@@ -5,13 +5,13 @@ from torch import nn
 
 
 class Embedder(nn.Module):
-    def __init__(self, t5_for_template_generation, generator_name, encoder_name):
+    def __init__(self, finetuned_t5_for_template_generation, tokenizer_name, template_encoder_name):
         super().__init__()
         self.device = self.get_curr_device()
-        self.template_generator = T5ForConditionalGeneration.from_pretrained(t5_for_template_generation).to(self.device)
-        self.template_generator_tokenizer = T5Tokenizer.from_pretrained(generator_name)
-        self.encoder = BertModel.from_pretrained(encoder_name).to(self.device)
-        self.encoder_tokenizer = BertTokenizer.from_pretrained(encoder_name)
+        self.template_generator = T5ForConditionalGeneration.from_pretrained(finetuned_t5_for_template_generation).to(self.device)
+        self.template_generator_tokenizer = T5Tokenizer.from_pretrained(tokenizer_name)
+        self.encoder = BertModel.from_pretrained(template_encoder_name).to(self.device)
+        self.encoder_tokenizer = BertTokenizer.from_pretrained(template_encoder_name)
 
     def forward(self, dataset_holder: DatasetHolder):
         table = self.generate_template_sentences(dataset_holder)

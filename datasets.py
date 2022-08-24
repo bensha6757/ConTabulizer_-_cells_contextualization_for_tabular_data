@@ -1,8 +1,9 @@
 import math
+import os
 
 from torch.utils.data import Dataset
 import csv
-import glob
+import pandas as pd
 import numpy as np
 
 
@@ -58,11 +59,14 @@ class DatasetCropper(Dataset):
 
 
 class DatasetsWrapper(Dataset):
-    def __init__(self, datasets_path, number_of_records_per_crop, is_shuffle=True):
+    def __init__(self, datasets_path, number_of_records_per_crop, train_or_val, is_shuffle=True):
         self.datasets = []
-        self.read_datasets(datasets_path)
         self.number_of_records_per_crop = number_of_records_per_crop
         self.is_shuffle = is_shuffle
+        self.train_or_val = train_or_val
+
+        self.read_datasets(datasets_path)
+
         self.datasets_lens = []
         lens = 0
         for dataset in self.datasets:
@@ -78,10 +82,35 @@ class DatasetsWrapper(Dataset):
                 return self.datasets[i][idx - (self.datasets_lens[i - 1] if i != 0 else 0)]
 
     def read_datasets(self, datasets_path):
-        dataset_files_dirs = glob.glob(datasets_path)
-        for dataset_dir in dataset_files_dirs:
-            for file_path in glob.glob(dataset_dir):
-                if file_path.endswith('.csv'):
-                    dataset_holder = DatasetHolder(table_name=dataset_dir.split('/')[-1], path=file_path)
-                    dataset_cropper = DatasetCropper(dataset_holder, self.number_of_records_per_crop, self.is_shuffle)
-                    self.datasets.append(dataset_cropper)
+        for current_dir, dirs, _ in os.walk(datasets_path):
+            for dataset_dir in dirs:
+                for prefix_dir, _, files in os.walk(os.path.join(current_dir, dataset_dir)):
+                    for file_name in files:
+                        if file_name.endswith('.csv') and self.train_or_val in file_name:
+                            dataset_holder = DatasetHolder(table_name=dataset_dir.replace('-', ' '),
+                                                           path=os.path.join(prefix_dir, file_name))
+                            dataset_cropper = DatasetCropper(dataset_holder=dataset_holder,
+                                                             number_of_records_per_crop=self.number_of_records_per_crop,
+                                                             is_shuffle=self.is_shuffle)
+                            self.datasets.append(dataset_cropper)
+
+
+def split_train_val_test(datasets_path):
+    for current_dir, dirs, _ in os.walk(datasets_path):
+        for dataset_dir in dirs:
+            for prefix_dir, _, files in os.walk(os.path.join(current_dir, dataset_dir)):
+                for file_path in files:
+                    if file_path.endswith('.csv'):
+                        df = pd.read_csv(os.path.join(prefix_dir, file_path), encoding='utf-8')
+                        df['split'] = np.random.randn(df.shape[0], 1)
+
+                        msk = np.random.rand(len(df)) <= 0.8
+
+                        train = df[msk]
+                        val = df[~msk]
+                        train.to_csv(os.path.join(prefix_dir, 'train.csv'), encoding='utf-8')
+                        val.to_csv(os.path.join(prefix_dir, 'val.csv'), encoding='utf-8')
+
+
+if __name__ == '__main__':
+    split_train_val_test('train-data/csvs')
