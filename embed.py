@@ -13,8 +13,8 @@ class Embedder(nn.Module):
         self.encoder = BertModel.from_pretrained(template_encoder_name).to(self.device)
         self.encoder_tokenizer = BertTokenizer.from_pretrained(template_encoder_name)
 
-    def forward(self, dataset_holder: DatasetHolder):
-        table = self.generate_template_sentences(dataset_holder)
+    def forward(self, dataset_holder_dict):
+        table = self.generate_template_sentences(dataset_holder_dict)
         return self.generate_encoding(table)
 
     def generate_encoding(self, table_content):
@@ -39,8 +39,8 @@ class Embedder(nn.Module):
             device += ":" + str(curr_cuda)
         return device
 
-    def generate_template_sentences(self, dataset_holder: DatasetHolder):
-        table = prepare_table_for_template_generator(dataset_holder)
+    def generate_template_sentences(self, dataset_holder_dict):
+        table = prepare_table_for_template_generator(dataset_holder_dict)
         templates_table = []
         for row in table:
             source_encoding = self.template_generator_tokenizer.batch_encode_plus(row,
@@ -70,13 +70,13 @@ class Embedder(nn.Module):
         return templates_table
 
 
-def prepare_table_for_template_generator(dataset_holder: DatasetHolder):
-    row_names = dataset_holder.row_names
-    col_names = dataset_holder.col_names
-    table_content = dataset_holder.table_content
+def prepare_table_for_template_generator(dataset_holder_dict):
+    row_names = dataset_holder_dict['row_names']
+    col_names = dataset_holder_dict['col_names']
+    table_content = dataset_holder_dict['table_content']
 
     for row_idx, row in enumerate(table_content):
         for col_idx, cell_value in enumerate(row):
             table_content[row_idx][col_idx] = \
-                row_names[row_idx] + ' # ' + col_names[col_idx] + ' # ' + cell_value + ' # ' + dataset_holder.table_name
+                row_names[row_idx] + ' # ' + col_names[col_idx] + ' # ' + cell_value + ' # ' + dataset_holder_dict['table_name']
     return table_content

@@ -22,8 +22,8 @@ class PlConTabulizer(pl.LightningModule):
         t5_model = T5ForConditionalGeneration.from_pretrained(t5_for_generation)
         self.model = ConTabulizerForGeneration(embedder=embedder, model=contabulizer_model, t5_model=t5_model)
 
-    def forward(self, dataset_holder):
-        self.model(dataset_holder)
+    def forward(self, dataset_holder_dict):
+        self.model(dataset_holder_dict)
 
     def training_step(self, batch):
         dataset_holder = batch

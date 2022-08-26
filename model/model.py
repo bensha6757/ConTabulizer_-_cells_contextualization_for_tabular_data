@@ -110,8 +110,8 @@ class ConTabulizerForGeneration(nn.Module):
         self.model = model
         self.t5_model = t5_model
 
-    def forward(self, dataset_holder):
-        x = self.embedder(dataset_holder)
+    def forward(self, dataset_holder_dict):
+        x = self.embedder(dataset_holder_dict)
         x = self.model(x)
         return self.t5_model(encoder_outputs=x)
 

@@ -38,8 +38,14 @@ class DatasetHolder:
     def get_dataset_holder_crop(self, start, end):
         cropped_row_names = self.row_names[start: end]
         cropped_table_content = self.table_content[start: end]
-        return DatasetHolder(self.table_name, row_names=cropped_row_names, col_names=self.col_names,
-                             table_content=cropped_table_content)
+        return {
+            'table_name': self.table_name,
+            'row_names': cropped_row_names,
+            'col_names': self.col_names,
+            'table_content': cropped_table_content
+        }
+        # return DatasetHolder(self.table_name, row_names=cropped_row_names, col_names=self.col_names,
+        #                      table_content=cropped_table_content)
 
 
 class DatasetCropper(Dataset):
