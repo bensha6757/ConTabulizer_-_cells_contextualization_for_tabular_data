@@ -95,7 +95,7 @@ class DatasetsWrapper(Dataset):
                             self.datasets.append(dataset_cropper)
 
 
-def split_train_val_test(datasets_path):
+def split_train_val_test(datasets_path, frac=0.8):
     for current_dir, dirs, _ in os.walk(datasets_path):
         for dataset_dir in dirs:
             for prefix_dir, _, files in os.walk(os.path.join(current_dir, dataset_dir)):
@@ -104,7 +104,7 @@ def split_train_val_test(datasets_path):
                         df = pd.read_csv(os.path.join(prefix_dir, file_path), encoding='utf-8')
                         df['split'] = np.random.randn(df.shape[0], 1)
 
-                        msk = np.random.rand(len(df)) <= 0.8
+                        msk = np.random.rand(len(df)) <= frac
 
                         train = df[msk]
                         val = df[~msk]

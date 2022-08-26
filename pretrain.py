@@ -1,5 +1,6 @@
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
+import fairscale
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.utils.data import DataLoader
 
@@ -7,6 +8,7 @@ from datasets import DatasetsWrapper
 from model.model import ConTabulizer, ConTabulizerForGeneration
 from embed import Embedder
 from transformers import T5ForConditionalGeneration, Adafactor
+from pretrain_config import t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name, dim, nfeats, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout
 
 
 class PlConTabulizer(pl.LightningModule):
@@ -70,32 +72,35 @@ if __name__ == '__main__':
     datasets_dir = 'train-data/csvs'
     number_of_records_per_crop = 10
     is_shuffle = True
+    # wandb.init(project="contabulizer")
 
     table_data_module = TableDataModule(datasets_path=datasets_dir,
                                         number_of_records_per_crop=number_of_records_per_crop,
                                         is_shuffle=is_shuffle)
-    model = PlConTabulizer(t5_for_generation='t5-small',
-                           finetuned_t5_for_template_generation='t5-base',
-                           template_tokenizer_name='t5-base',
-                           template_encoder_name='bert-base-uncased',
-                           dim=768,
-                           nfeats=4,
-                           num_transformer_blocks=4,
-                           heads=8,
-                           row_dim_head=16,
-                           table_dim_head=16,
-                           attn_dropout=0.1,
-                           ff_dropout=0.1)
+    model = PlConTabulizer(t5_for_generation=t5_for_generation,
+                           finetuned_t5_for_template_generation=finetuned_t5_for_template_generation,
+                           template_tokenizer_name=template_tokenizer_name,
+                           template_encoder_name=template_encoder_name,
+                           dim=dim,
+                           nfeats=nfeats,
+                           num_transformer_blocks=num_transformer_blocks,
+                           heads=heads,
+                           row_dim_head=row_dim_head,
+                           table_dim_head=table_dim_head,
+                           attn_dropout=attn_dropout,
+                           ff_dropout=ff_dropout)
 
     wandb_logger = WandbLogger(
-        name="",
-        project="",
-        entity="roicohen9"
+        name=f"{t5_for_generation}-{finetuned_t5_for_template_generation}-{template_tokenizer_name}-"
+             f"{template_encoder_name}-{dim}-{num_transformer_blocks}-{heads}-{row_dim_head}-"
+             f"{table_dim_head}-{attn_dropout}-{ff_dropout}",
+        project="ConTabulizer",
+        entity="bensha"
     )
 
     val_loss_checkpoint_callback = ModelCheckpoint(monitor="val loss", mode="min")
 
-    gpus = 1
+    gpus = 0
     train_strategy = 'ddp_sharded'
 
     trainer = pl.Trainer(
