@@ -111,7 +111,7 @@ def mask_table_content(cropped_table_content, number_of_masks):
     label = ''
     mask_counter = 0
     for i, j in mask_idxs:
-        mask_name = '[MASK' + str(mask_counter) + ']'
+        mask_name = '[extra_id_' + str(mask_counter) + ']'
         gold = cropped_table_content[i][j]
         cropped_table_content[i][j] = mask_name
         label += mask_name + ' ' + gold + ' '
