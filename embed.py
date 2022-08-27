@@ -13,6 +13,11 @@ class Embedder(nn.Module):
         self.encoder = BertModel.from_pretrained(template_encoder_name).to(self.device)
         self.encoder_tokenizer = BertTokenizer.from_pretrained(template_encoder_name)
 
+        new_masks_dict = {'additional_special_tokens': ['[MASK1]', '[MASK2]', '[MASK3]', '[MASK4]', '[MASK5]',
+                                                        '[MASK6]', '[MASK7]', '[MASK8]', '[MASK9]', '[MASK0]']}
+        num_added_toks = self.encoder_tokenizer.add_special_tokens(new_masks_dict)
+        self.encoder.resize_token_embeddings(len(self.encoder_tokenizer))
+
     def forward(self, dataset_holder_dict):
         table = self.generate_template_sentences(dataset_holder_dict)
         return self.generate_encoding(table)
