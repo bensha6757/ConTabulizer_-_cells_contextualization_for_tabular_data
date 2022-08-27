@@ -1,4 +1,5 @@
 import pytorch_lightning as pl
+import wandb
 from pytorch_lightning.loggers import WandbLogger
 import fairscale
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -131,7 +132,7 @@ class RowColValue2SentenceDataset(Dataset):
 
 
 if __name__ == '__main__':
-    # wandb.init(project="contabulizer")
+    wandb.init(project="t5_for_template_generation")
     model_params = {
         "MODEL": "t5-base",  # model_type: t5-base/t5-large
         "TRAIN_BATCH_SIZE": 8,  # training batch size
@@ -163,9 +164,9 @@ if __name__ == '__main__':
     model = T5TemplateGeneration(t5_model_name=model_params["MODEL"])
 
     wandb_logger = WandbLogger(
-        name=f"",
-        project="T5TemplateGeneration",
-        entity="bensha"
+        name=f"model-{model_params['MODEL']}",
+        project="t5_for_template_generation",
+        entity="roicohen9"
     )
 
     val_loss_checkpoint_callback = ModelCheckpoint(monitor="val loss", mode="min")
