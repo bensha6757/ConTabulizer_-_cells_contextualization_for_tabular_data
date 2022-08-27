@@ -1,5 +1,6 @@
 import math
 import os
+import random
 
 from torch.utils.data import Dataset
 import csv
@@ -38,11 +39,13 @@ class DatasetHolder:
     def get_dataset_holder_crop(self, start, end):
         cropped_row_names = self.row_names[start: end]
         cropped_table_content = self.table_content[start: end]
+        label = mask_table_content(cropped_table_content, number_of_masks=len(cropped_row_names))
         return {
             'table_name': self.table_name,
             'row_names': cropped_row_names,
             'col_names': self.col_names,
-            'table_content': cropped_table_content
+            'table_content': cropped_table_content,
+            'label': label
         }
         # return DatasetHolder(self.table_name, row_names=cropped_row_names, col_names=self.col_names,
         #                      table_content=cropped_table_content)
@@ -101,6 +104,21 @@ class DatasetsWrapper(Dataset):
                             self.datasets.append(dataset_cropper)
 
 
+def mask_table_content(cropped_table_content, number_of_masks):
+    num_rows, num_cols = len(cropped_table_content), len(cropped_table_content[0])
+    mask_idxs = random.sample([(i, j) for i in range(num_rows) for j in range(num_cols)], number_of_masks)
+    mask_idxs.sort()
+    label = ''
+    mask_counter = 0
+    for i, j in mask_idxs:
+        mask_name = '[MASK' + str(mask_counter) + ']'
+        gold = cropped_table_content[i][j]
+        cropped_table_content[i][j] = mask_name
+        label += mask_name + ' ' + gold + ' '
+        mask_counter += 1
+    return label
+
+
 def split_train_val_test(datasets_path, frac=0.8):
     for current_dir, dirs, _ in os.walk(datasets_path):
         for dataset_dir in dirs:
@@ -119,4 +137,7 @@ def split_train_val_test(datasets_path, frac=0.8):
 
 
 if __name__ == '__main__':
-    split_train_val_test('train-data/csvs')
+    # split_train_val_test('train-data/csvs')
+    a = [['hi', 'bi'], ['roi', 'ben'], ['hfdsaaaaaaai', 'bcdsi']]
+    d = DatasetHolder('tab', row_names=['row1', 'row2', 'row3'], col_names=['1', '2'], table_content=a)
+    print(d.get_dataset_holder_crop(0, 2))
