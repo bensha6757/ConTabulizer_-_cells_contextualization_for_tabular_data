@@ -100,7 +100,7 @@ if __name__ == '__main__':
              f"{template_encoder_name}-{input_dim}-{hidden_dim}-{num_transformer_blocks}-{heads}-{row_dim_head}-"
              f"{table_dim_head}-{attn_dropout}-{ff_dropout}",
         project="ConTabulizer",
-        entity="roicohen9"
+        entity="bensha"
     )
 
     val_loss_checkpoint_callback = ModelCheckpoint(monitor="val loss", mode="min")
