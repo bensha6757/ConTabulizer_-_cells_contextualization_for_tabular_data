@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from datasets import DatasetsWrapper
 from model.model import ConTabulizer, ConTabulizerForGeneration
 from embed import Embedder
-from transformers import T5ForConditionalGeneration, Adafactor
+from transformers import T5ForConditionalGeneration, T5Tokenizer, Adafactor
 from pretrain_config import t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, \
     template_encoder_name, input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, \
     attn_dropout, ff_dropout
@@ -22,22 +22,23 @@ class PlConTabulizer(pl.LightningModule):
         contabulizer_model = ConTabulizer(input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head,
                                           table_dim_head, attn_dropout, ff_dropout)
         t5_model = T5ForConditionalGeneration.from_pretrained(t5_for_generation)
-        self.model = ConTabulizerForGeneration(embedder=embedder, model=contabulizer_model, t5_model=t5_model)
+        t5_tokenizer = T5Tokenizer.from_pretrained(t5_for_generation)
+        self.model = ConTabulizerForGeneration(embedder=embedder, model=contabulizer_model,
+                                               t5_model=t5_model, tokenizer=t5_tokenizer)
 
     def forward(self, dataset_holder_dict):
         output = self.model(dataset_holder_dict)
-        print(output)
         return output.loss, output.logits
 
-    def training_step(self, batch, label):
-        dataset_holder = batch
-        loss, outputs = self(dataset_holder)
+    def training_step(self, batch, batch_idx):
+        dataset_holder_dict = batch
+        loss, outputs = self(dataset_holder_dict)
         self.log("train loss", loss, prog_bar=True, logger=True)
         return loss
 
-    def validation_step(self, batch, label):
-        dataset_holder = batch
-        loss, outputs = self(dataset_holder)
+    def validation_step(self, batch, batch_idx):
+        dataset_holder_dict = batch
+        loss, outputs = self(dataset_holder_dict)
         self.log("val loss", loss, prog_bar=True, logger=True)
         return loss
 

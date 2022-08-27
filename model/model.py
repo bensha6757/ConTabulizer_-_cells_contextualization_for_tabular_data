@@ -107,16 +107,18 @@ class ConTabulizer(nn.Module):
 
 
 class ConTabulizerForGeneration(nn.Module):
-    def __init__(self, embedder, model, t5_model):
+    def __init__(self, embedder, model, t5_model, tokenizer):
         super().__init__()
         self.embedder = embedder
         self.model = model
         self.t5_model = t5_model
+        self.tokenizer = tokenizer
 
     def forward(self, dataset_holder_dict):
         x = self.embedder(dataset_holder_dict)
         x = self.model(x)
-        return self.t5_model(decoder_inputs_embeds=x, inputs_embeds=x)
+        tokenized_labels = self.tokenizer(dataset_holder_dict['label'], padding=True, return_tensors='pt').input_ids
+        return self.t5_model(decoder_inputs_embeds=x, inputs_embeds=x, labels=tokenized_labels)
 
 # class BertAttention(nn.Module):
 #     def __init__(self, config, position_embedding_type=None):
