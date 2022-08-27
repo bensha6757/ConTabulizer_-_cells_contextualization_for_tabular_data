@@ -8,30 +8,34 @@ from datasets import DatasetsWrapper
 from model.model import ConTabulizer, ConTabulizerForGeneration
 from embed import Embedder
 from transformers import T5ForConditionalGeneration, Adafactor
-from pretrain_config import t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name, dim, nfeats, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout
+from pretrain_config import t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, \
+    template_encoder_name, input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, \
+    attn_dropout, ff_dropout
 
 
 class PlConTabulizer(pl.LightningModule):
     def __init__(self, t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name,
-                 dim, nfeats, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout,
+                 input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         embedder = Embedder(finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name)
-        contabulizer_model = ConTabulizer(dim, nfeats, num_transformer_blocks, heads, row_dim_head,
+        contabulizer_model = ConTabulizer(input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head,
                                           table_dim_head, attn_dropout, ff_dropout)
         t5_model = T5ForConditionalGeneration.from_pretrained(t5_for_generation)
         self.model = ConTabulizerForGeneration(embedder=embedder, model=contabulizer_model, t5_model=t5_model)
 
     def forward(self, dataset_holder_dict):
-        self.model(dataset_holder_dict)
+        output = self.model(dataset_holder_dict)
+        print(output)
+        return output.loss, output.logits
 
-    def training_step(self, batch):
+    def training_step(self, batch, label):
         dataset_holder = batch
         loss, outputs = self(dataset_holder)
         self.log("train loss", loss, prog_bar=True, logger=True)
         return loss
 
-    def validation_step(self, batch):
+    def validation_step(self, batch, label):
         dataset_holder = batch
         loss, outputs = self(dataset_holder)
         self.log("val loss", loss, prog_bar=True, logger=True)
@@ -81,8 +85,8 @@ if __name__ == '__main__':
                            finetuned_t5_for_template_generation=finetuned_t5_for_template_generation,
                            template_tokenizer_name=template_tokenizer_name,
                            template_encoder_name=template_encoder_name,
-                           dim=dim,
-                           nfeats=nfeats,
+                           input_dim=input_dim,
+                           hidden_dim=hidden_dim,
                            num_transformer_blocks=num_transformer_blocks,
                            heads=heads,
                            row_dim_head=row_dim_head,
@@ -92,10 +96,10 @@ if __name__ == '__main__':
 
     wandb_logger = WandbLogger(
         name=f"{t5_for_generation}-{finetuned_t5_for_template_generation}-{template_tokenizer_name}-"
-             f"{template_encoder_name}-{dim}-{num_transformer_blocks}-{heads}-{row_dim_head}-"
+             f"{template_encoder_name}-{input_dim}-{hidden_dim}-{num_transformer_blocks}-{heads}-{row_dim_head}-"
              f"{table_dim_head}-{attn_dropout}-{ff_dropout}",
         project="ConTabulizer",
-        entity="bensha"
+        entity="roicohen9"
     )
 
     val_loss_checkpoint_callback = ModelCheckpoint(monitor="val loss", mode="min")

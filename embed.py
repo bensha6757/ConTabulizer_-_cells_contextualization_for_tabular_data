@@ -23,11 +23,11 @@ class Embedder(nn.Module):
             tokenized_row = self.encoder_tokenizer.batch_encode_plus(row,
                                                                      padding='max_length',
                                                                      return_tensors='pt',
-                                                                     add_special_tokens=True)
+                                                                     add_special_tokens=True).input_ids
             last_hidden_state = self.encoder(tokenized_row).last_hidden_state
             entries_encoding = last_hidden_state[:, 0, :].squeeze(1).unsqueeze(0)
             encodings_by_row.append(entries_encoding)
-        embedded_input = torch.stack(encodings_by_row, dim=0)
+        embedded_input = torch.stack(encodings_by_row, dim=0).squeeze(1)
         return embedded_input
 
     @staticmethod
@@ -78,5 +78,6 @@ def prepare_table_for_template_generator(dataset_holder_dict):
     for row_idx, row in enumerate(table_content):
         for col_idx, cell_value in enumerate(row):
             table_content[row_idx][col_idx] = \
-                row_names[row_idx] + ' # ' + col_names[col_idx] + ' # ' + cell_value + ' # ' + dataset_holder_dict['table_name']
+                row_names[row_idx][0] + ' # ' + col_names[col_idx][0] + ' # ' + \
+                cell_value[0] + ' # ' + dataset_holder_dict['table_name'][0]
     return table_content

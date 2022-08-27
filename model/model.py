@@ -35,13 +35,13 @@ class GEGLU(nn.Module):
 
 
 class FeedForward(nn.Module):
-    def __init__(self, dim, mult=4, dropout=0.):
+    def __init__(self, input_dim, output_dim, mult=4, dropout=0.):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Linear(dim, dim * mult * 2),
+            nn.Linear(input_dim, input_dim * mult * 2),
             GEGLU(),
             nn.Dropout(dropout),
-            nn.Linear(dim * mult, dim)
+            nn.Linear(input_dim * mult, output_dim)
         )
 
     def forward(self, x, **kwargs):
@@ -78,22 +78,25 @@ class Attention(nn.Module):
 
 
 class ConTabulizer(nn.Module):
-    def __init__(self, dim, nfeats, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout,
+    def __init__(self, input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout,
                  ff_dropout):
         super().__init__()
         self.layers = nn.ModuleList([])
+        self.layers.append(PreNorm(input_dim, FeedForward(input_dim, hidden_dim)))
         for _ in range(num_transformer_blocks):
             self.layers.append(nn.ModuleList([
-                PreNorm(dim, Residual(Attention(dim, heads=heads, dim_head=row_dim_head, dropout=attn_dropout))),
-                PreNorm(dim, Residual(FeedForward(dim, dropout=ff_dropout))),
-                PreNorm(dim * nfeats,
-                        Residual(Attention(dim * nfeats, heads=heads, dim_head=table_dim_head, dropout=attn_dropout))),
-                PreNorm(dim * nfeats, Residual(FeedForward(dim * nfeats, dropout=ff_dropout))),
+                PreNorm(hidden_dim, Residual(Attention(hidden_dim, heads=heads, dim_head=row_dim_head, dropout=attn_dropout))),
+                PreNorm(hidden_dim, Residual(FeedForward(hidden_dim, hidden_dim, dropout=ff_dropout))),
+                PreNorm(hidden_dim,
+                        Residual(Attention(hidden_dim, heads=heads, dim_head=table_dim_head, dropout=attn_dropout))),
+                PreNorm(hidden_dim, Residual(FeedForward(hidden_dim, hidden_dim, dropout=ff_dropout))),
             ]))
 
     def forward(self, x):
+        first_layer_for_changing_dim = self.layers[0]
+        x = first_layer_for_changing_dim(x)
         x_shape = x.shape
-        for row_attn, ff1, table_attn, ff2 in self.layers:
+        for row_attn, ff1, table_attn, ff2 in self.layers[1:]:
             x = row_attn(x)
             x = ff1(x)
             x = x.view(-1, x.shape[-1]).unsqueeze(0)
@@ -113,7 +116,7 @@ class ConTabulizerForGeneration(nn.Module):
     def forward(self, dataset_holder_dict):
         x = self.embedder(dataset_holder_dict)
         x = self.model(x)
-        return self.t5_model(encoder_outputs=x)
+        return self.t5_model(decoder_inputs_embeds=x, inputs_embeds=x)
 
 # class BertAttention(nn.Module):
 #     def __init__(self, config, position_embedding_type=None):
