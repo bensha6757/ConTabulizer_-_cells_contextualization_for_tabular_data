@@ -16,7 +16,9 @@ class T5TemplateGeneration(pl.LightningModule):
         self.model = T5ForConditionalGeneration.from_pretrained(t5_model_name)
 
     def forward(self, x):
-        output = self.model(x)
+        output = self.model(input_ids=x['input_ids'],
+                            attention_mask=x['attention_mask'],
+                            labels=x['labels'])
         return output.loss, output.logits
 
     def training_step(self, batch, batch_idx):
@@ -145,10 +147,7 @@ if __name__ == '__main__':
         "SEED": 42,  # set seed for reproducibility
     }
 
-    data_path = "data.csv"
-
-    data_df = pd.read_csv(data_path)
-
+    data_df = pd.read_csv("data.csv")
     data_df = data_df[['text', 'headlines']]
 
     # Creation of Dataset and Dataloader

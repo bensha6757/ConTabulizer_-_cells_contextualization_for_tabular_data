@@ -82,7 +82,7 @@ class ConTabulizer(nn.Module):
                  ff_dropout):
         super().__init__()
         self.layers = nn.ModuleList([])
-        self.layers.append(PreNorm(input_dim, FeedForward(input_dim, hidden_dim)))
+        # self.layers.append(PreNorm(input_dim, FeedForward(input_dim, hidden_dim)))
         for _ in range(num_transformer_blocks):
             self.layers.append(nn.ModuleList([
                 PreNorm(hidden_dim, Residual(Attention(hidden_dim, heads=heads, dim_head=row_dim_head, dropout=attn_dropout))),
@@ -93,8 +93,8 @@ class ConTabulizer(nn.Module):
             ]))
 
     def forward(self, x):
-        first_layer_for_changing_dim = self.layers[0]
-        x = first_layer_for_changing_dim(x)
+        # first_layer_for_changing_dim = self.layers[0]
+        # x = first_layer_for_changing_dim(x)
         x_shape = x.shape
         for row_attn, ff1, table_attn, ff2 in self.layers[1:]:
             x = row_attn(x)
@@ -118,7 +118,9 @@ class ConTabulizerForGeneration(nn.Module):
         x = self.embedder(dataset_holder_dict)
         x = self.model(x)
         tokenized_labels = self.tokenizer(dataset_holder_dict['label'], padding=True, return_tensors='pt').input_ids
-        return self.t5_model(decoder_inputs_embeds=x, inputs_embeds=x, labels=tokenized_labels)
+        x = x.view(-1, x.shape[-1])
+        x = x.unsqueeze(0)
+        return self.t5_model(inputs_embeds=x, encoder_outputs=[x], labels=tokenized_labels)
 
 # class BertAttention(nn.Module):
 #     def __init__(self, config, position_embedding_type=None):
