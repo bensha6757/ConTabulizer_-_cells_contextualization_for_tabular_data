@@ -1,4 +1,4 @@
-house,longitude,latitude,housing_median_age,total_rooms,total_bedrooms,population,households,median_income,median_house_value,ocean_proximity
+house,longitude,latitude,housing median age,total rooms,total bedrooms,population,households,median income,median house value,ocean proximity
 house 6,-122.25,37.85,52,919,213,413,193,4.0368,269700,NEAR BAY
 house 11,-122.26,37.85,52,2202,434,910,402,3.2031,281500,NEAR BAY
 house 14,-122.26,37.84,52,696,191,345,174,2.6736,191300,NEAR BAY
