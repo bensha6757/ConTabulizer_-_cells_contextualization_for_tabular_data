@@ -1,3 +1,5 @@
+import sys
+
 import pytorch_lightning as pl
 import wandb
 from pytorch_lightning.loggers import WandbLogger
@@ -134,7 +136,7 @@ class RowColValue2SentenceDataset(Dataset):
 
 
 if __name__ == '__main__':
-    wandb.init(project="t5_for_template_generation")
+    # wandb.init(project="t5_for_template_generation")
     model_params = {
         "MODEL": "t5-base",  # model_type: t5-base/t5-large
         "TRAIN_BATCH_SIZE": 8,  # training batch size
@@ -174,7 +176,7 @@ if __name__ == '__main__':
     train_strategy = 'ddp_sharded'
 
     trainer = pl.Trainer(
-        max_epochs=6,
+        max_epochs=30,
         gpus=gpus,
         num_nodes=1,
         strategy=train_strategy,

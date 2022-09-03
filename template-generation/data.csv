@@ -1,100 +1,166 @@
 text,headlines
-stephen curry # points # 40 # nba season statistics,stephen curry scored 40 points
-stephen curry # minutes # 20 # nba season statistics,stephen curry played 20 minutes
-stephen curry # starter  # yes # nba season statistics,stephen curry is a starter
-kevin durant # starter  # no # nba season statistics,stephen curry did not start
-stephen curry # assistes # 10 # nba season statistics,stephen curry passed 10 assists
-stephen curry # rebounds # 2 # nba season statistics,stephen curry had 2 rebounds
-stephen curry # turnovers # 13 # nba season statistics,stephen curry committed 13 turnovers
-stephen curry # is home # yes # nba season statistics,stephen curry played at home
-lebron james # is home # no # nba season statistics,lebron james played for the visiting team
-philadelphia # is home # yes # nba season statistics,philadelphia played at home
-new york # is home # no # nba season statistics,new york was the visitors
-philadelphia # team points quarter 1 # 27 # nba season statistics,philadelphia scored 27 points in quarter 1
-philadelphia # team losses # 10 # nba season statistics,philadelphia has 10 losses
-philadelphia # team wins # 20 # nba season statistics,philadelphia has 20 wins
-johnson # first name # tom # contact information,johnson's first name is tom
-tom # last name # johnson # contact information,tom's last name is johnson
-johnson # country # france # contact information,johnson is from france
-johnson # birthday # 8/13/1995 # contact information,johnson's birthday is on 8/13/1995
-johnson # phone number # 0526966001 # contact information,johnson's phone number is 0526966001
-johnson # email # johnson@gmail.com # contact information,johnson's email is johnson@gmail.com
-ben shapira # amount purchased # 12 # buyers list,ben shapira purchased 12 units
-ben shapira # date of purchase # 8/19/2017 # buyers list,ben shapira's purchase date was 8/19/2017
-ben shapira # product # cake # buyers list,ben shapira purchased a cake
-ben shapira # price # 1.5 $ # buyers list,ben shapira paid 1.5 $
-doughnut # quantity sold # 560 # coffee products sales analysis,560 doughnuts were sold
-cupcakes # quantity sold # 286 # coffee products sales analysis,286 cupcakes were sold
-cupcakes # month # january # coffee products sales analysis,cupcakes were sold on january
-"cupcakes # price # 0,85 $ # coffee products sales analysis","cupcakes cost 0,85 $"
-cupcakes # quantity in stock # 3000 # coffee products sales analysis,there are 3000 cupcakes in stock
-donald # department # finance # employees list,donald is from the finance department
-donald # location # israel # employees list,donald is located in israel
-diego # title # full stack engineer at algosec # linkedin details,diego's title is: full stack engineer at algosec
-diego # employment type # part-time # linkedin details,diego works in a part-time job
-carlos # employment type # freelancer # linkedin details,carlos works as a freelancer
-ronald # employment type # full-time # linkedin details,ronald works in a full-time job
-diego # company name # algosec # linkedin details,diego works in a company called algosec
-diego # company location # israel # linkedin details,diego works in a company located in israel
-diego # start date # october 2020 # linkedin details,diego started working in october 2020
-diego # end date # august 20202 # linkedin details,diego's work ended in august 2022
-diego # industry # computer software # linkedin details,diego's company is from the computer software industry
-diego # description # diego is a highly motivated student who wants to explore the software field. # linkedin details,diego's description is: diego is a highly motivated student who wants to explore the software field.
-"diego # skills # coding, analysis, frontend # linkedin details","diego's skills are: coding, analysis, frontend"
-diego # education # bachelor of science # linkedin details,diego's education is bachelor of science
+Stephen Curry # points # 40 # NBA season statistics,Stephen Curry scored 40 points
+Stephen Curry # minutes # 20 # NBA season statistics,Stephen Curry played 20 minutes
+Stephen Curry # STARTER  # yes # NBA season statistics,Stephen Curry is a starter
+kevin durant # STARTER  # no # NBA season statistics,Stephen Curry did not start
+Stephen Curry # assistes # 10 # NBA season statistics,Stephen Curry passed 10 assists
+Stephen Curry # rebounds # 2 # NBA season statistics,Stephen Curry had 2 rebounds
+Stephen Curry # turnovers # 13 # NBA season statistics,Stephen Curry committed 13 turnovers
+Stephen Curry # is home # yes # NBA season statistics,Stephen Curry played at home
+lebron james # is home # no # NBA season statistics,lebron james played for the visiting team
+Philadelphia # is home # yes # NBA season statistics,Philadelphia played at home
+new york # is home # no # NBA season statistics,new york was the visitors
+Philadelphia # team points quarter 1 # 27 # NBA season statistics,Philadelphia scored 27 points in quarter 1
+Philadelphia # team losses # 10 # NBA season statistics,Philadelphia has 10 losses
+Philadelphia # team wins # 20 # NBA season statistics,Philadelphia has 20 wins
+Johnson # first name # tom # contact information,Johnson's first name is tom
+tom # last name # Johnson # contact information,tom's last name is johnson
+Johnson # Country # France # contact information,Johnson is from France
+Johnson # birthday # 13/08/1995 # contact information,Johnson's birthday is on 8/13/1995
+Johnson # Phone number # 0526966001 # contact information,Johnson's phone number is 0526966001
+Johnson # Email # Johnson@gmail.com # contact information,Johnson's email is Johnson@gmail.com
+Ben Shapira # amount purchased # 12 # buyers list,Ben Shapira purchased 12 units
+Ben Shapira # Date of purchase # 19/08/2017 # buyers list,Ben Shapira's purchase date was 8/19/2017
+Ben Shapira # product # Cake # buyers list,Ben Shapira purchased a cake
+Ben Shapira # price # 1.5 $ # buyers list,Ben Shapira paid 1.5 $
+Doughnut # quantity sold # 560 # Café products sales analysis,560 Doughnuts were sold
+cupcakes # quantity sold # 286 # Café products sales analysis,286 cupcakes were sold
+cupcakes # month # January # Café products sales analysis,cupcakes were sold on January
+"cupcakes # price # 0,85 $ # Café products sales analysis","cupcakes cost 0,85 $"
+cupcakes # quantity in stock # 3000 # Café products sales analysis,there are 3000 cupcakes in stock
+donald # department # finance # Employees list,donald is from the finance department
+donald # location # israel # Employees list,donald is located in israel
+diego # title # full stack engineer at algosec # Linkedin details,diego's title is: full stack engineer at algosec
+diego # employment type # part-time # Linkedin details,diego works in a part-time job
+carlos # employment type # freelancer # Linkedin details,carlos works as a freelancer
+ronald # employment type # full-time # Linkedin details,ronald works in a full-time job
+diego # company name # Algosec # Linkedin details,diego works in a company called algosec
+diego # company location # israel # Linkedin details,diego works in a company located in israel
+diego # start date # october 2020 # Linkedin details,diego started working in october 2020
+diego # end date # august 2022 # Linkedin details,diego's work ended in august 2022
+diego # industry # computer software # Linkedin details,diego's company is from the computer software industry
+diego # description # diego is a highly motivated student who wants to explore the software field. # Linkedin details,diego's description is: diego is a highly motivated student who wants to explore the software field.
+"diego # skills # coding, analysis, frontend # Linkedin details","diego's skills are: coding, analysis, frontend"
+diego # education # Bachelor of science # Linkedin details,diego's education is Bachelor of science
 alex # january # 14 # sales report,alex sold 14 units in january
-alex # march # 27 # sales report,alex sold 27 units in march
+alex # March # 27 # sales report,alex sold 27 units in march
 alex # april # 93 # sales report,alex sold 93 units in april
 alex # june # 95 # sales report,alex sold 95 units in june
-t-mobile communications # account name # loyal3 # financial protfolio analysis,t-mobile communications's account name is loyal3
-t-mobile communications # stock price # 42.49$ # financial protfolio analysis,t-mobile communications's stock price is 42.49$
-tokyo # country # japan # list of largest cities,tokyo is a city in japan
-"tokyo # un 2018 population estimates # 37,468,000 # list of largest cities","the population estimates in tokyo is 37,468,000 according to un 2018"
-"tokyo # density # 6,169 # list of largest cities","the density in tokyo is 6,169"
-"tokyo # area # 2,191 # list of largest cities","tokyo's area is 2,191"
-jerusalem # country/territory # israel # list of national capitals,jerusalem is the capital of israel
-abuja # notes # lagos was the capital from 1914 to 1991 # list of national capitals,notes regarding abuja: lagos was the capital from 1914 to 1991
-facebook # company # meta # list of social platforms with at least 100 million active users,facebook is a social platform of the company meta
-youtube # company # alphabet # list of social platforms with at least 100 million active users,youtube is a social platform of the company alphabet
-facebook # country # united states # list of social platforms with at least 100 million active users,facebook was created in united states
-facebook # launched # 2004 # list of social platforms with at least 100 million active users,facebook was launched in 2004
-facebook # monthly active users # 2.91 billion # list of social platforms with at least 100 million active users,facebook has 2.91 billion monthly active users
-facebook # other metrics # 1.93 billion daily active users # list of social platforms with at least 100 million active users,other metrics regarding facebook: 1.93 billion daily active users
-abyssinian # location of origin # unspecified # list of cat breeds,the location of origin of the abyssinian is unspecified
-abyssinian # body type # semi-foreign # list of cat breeds,the abyssinian has a semi-foreign body type
-abyssinian # coat type and length # short # list of cat breeds,the coat type and length of the abyssinian is short
-abyssinian # coat pattern # ticked tabby # list of cat breeds,the abyssinian has a ticked tabby coat pattern
-samoa # government type # unitary state # governments in countries,the government type of samoa is unitary state
-bob loughman # birth date # 3/8/1961 # presidents,bob loghman was born on 3/8/1961
-"oman # area # 309,500 km squared # countries by population","the area of oman is 309,500 km squared"
-"guyana # population # 743,700 # countries by population","the population of guyana is 743,700"
-libya # capital # tripoli # countries by population,tripoli is the capital of libya
-michel aoun # place of birth # lebanon # presidents,michel aoun was born in lebanon
-hage geingob # country # namibia # presidents,hage geingob is the president of namibia
-david # age # 36 # employees salary,david is 36 years old
-david # salary # 26500 # employees salary,david's salary is 26500
-higgs boson # features # 30 # description of datasets,the number of features in the higgs boson dataset is 30
+T-mobile communications # account name # loyal3 # Financial protfolio analysis,T-mobile communications's account name is loyal3
+T-mobile communications # stock price # 42.49$ # Financial protfolio analysis,T-mobile communications's stock price is 42.49$
+Tokyo # Country # Japan # List of largest cities,Tokyo is a city in Japan
+"Tokyo # UN 2018 population estimates # 37,468,000 # List of largest cities","the population estimates in tokyo is 37,468,000 according to UN 2018"
+"Tokyo # Density # 6,169 # List of largest cities","the density in tokyo is 6,169"
+"Tokyo # Area # 2,191 # List of largest cities","Tokyo's area is 2,191"
+Jerusalem # Country/Territory # israel # List of national capitals,jerusalem is the capital of israel
+Abuja # Notes # Lagos was the capital from 1914 to 1991. # List of national capitals,notes regarding abuja: Lagos was the capital from 1914 to 1991.
+Facebook # Company # Meta # List of social platforms with at least 100 million active users,Facebook is a social platform of the company Meta
+YouTube # Company # Alphabet # List of social platforms with at least 100 million active users,YouTube is a social platform of the company Alphabet
+Facebook # Country # United States # List of social platforms with at least 100 million active users,Facebook was created in United States
+Facebook # Launched # 2004 # List of social platforms with at least 100 million active users,facebook was launched in 2004
+Facebook # Monthly active users # 2.91 billion # List of social platforms with at least 100 million active users,facebook has 2.91 billion monthly active users
+Facebook # other metrics # 1.93 billion daily active users # List of social platforms with at least 100 million active users,other metrics regarding facebook: 1.93 billion daily active users
+Abyssinian # location of origin # unspecified # List of cat breeds,the location of origin of the Abyssinian is unspecified
+Abyssinian # body type # Semi-foreign # List of cat breeds,the Abyssinian has a Semi-foreign body type
+Abyssinian # coat type and length # short # List of cat breeds,the coat type and length of the Abyssinian is short
+Abyssinian # coat pattern # ticked tabby # List of cat breeds,the Abyssinian has a ticked tabby coat pattern
+Samoa # government type # Unitary state # governments in countries,the government type of samoa is unitary state
+Bob Loughman # birth date # 08/03/1961 # presidents,bob loghman was born on 3/8/1961
+"Oman # area # 309,500 km squared # countries by population","the area of oman is 309,500 km squared"
+"Guyana # population # 743,700 # countries by population","the population of guyana is 743,700"
+Libya # capital # Tripoli # countries by population,Tripoli is the capital of libya
+Michel Aoun # place of birth # Lebanon # presidents,Michel aoun was born in lebanon
+Hage Geingob # country # Namibia # presidents,Hage geingob is the president of namibia
+David # age # 36 # employees salary,david is 36 years old
+David # salary # 26500 # employees salary,david's salary is 26500
+higgs boson # features # 30 # description of datasets,The number of features in the Higgs boson dataset is 30
 higgs boson # classes # 2 # description of datasets,there are 2 classes in the higgs boson dataset
 higgs boson # samples # 800k # description of datasets,the higgs boson dataset contains 800k samples
 higgs boson # source # kaggle # description of datasets,the source of the higgs boson dataset is kaggle
-higgs boson # paper # tabnet # description of datasets,the higgs boson dataset was introduced in the tabnet paper
-person a # age # 30 # uci-bank,person a is 30 years old
-person a # marital # married # uci-bank,person a's marital status is married
-person a # education # primary # uci-bank,person a has a primary education
-person a # balance # 1787 # uci-bank,person a's account balance is 1787
-person a # housing # no # uci-bank,person a doesn't have a house
-person b # housing # yes # uci-bank,person b has a house
+higgs boson # paper # TabNet # description of datasets,the Higgs boson dataset was introduced in the TabNet paper
+person A # age # 30 # UCI-Bank,person A is 30 years old
+person A # marital # married # UCI-Bank,person A's marital status is married
+person A # education # primary # UCI-Bank,person A has a primary education
+person A # balance # 1787 # UCI-Bank,person A's account balance is 1787
+person A # housing # no # UCI-Bank,person A doesn't have a house
+person B # housing # yes # UCI-Bank,person B has a house
 epoch 1 # train loss # 0.87 # machine learning training progress,the training loss during epoch 1 was 0.87
 epoch 1 # accuracy # 0.5 # machine learning training progress,the accuracy during epoch 1 was 0.5
 epoch 1 # time # 0.02 # machine learning training progress,epoch 1 took 0.02 seconds
 order 1 # salesperson # fuller # orders list,fuller is the salesperson in charge of order 1
-order 1 # order date # 1/1/2011 # orders list,order 1 was made on 1/1/2011
+order 1 # order date # 01/01/2011 # orders list,order 1 was made on 1/1/2011
 order 1 # units # 13 # orders list,order 1 contains 13 units
+order 1 # UK Units #  # orders list,order 1 contains [empty] UK units
 plastic 1 # acetone # no effect # plastic types test,acetone has no effect on plastic 1
-plastic 1 # flame test # green color # plastic types test,a green color appeared during the flame test on plastic 1
-plastic 1 # heat # softens # plastic types test,plastic 1 softens when exposed to heat
+plastic 1 # Flame test # Green color # plastic types test,a green color appeared during the flame test on plastic 1
+plastic 1 # Heat # softens # plastic types test,plastic 1 softens when exposed to heat
 70 - 80 # number of male students # 7 # exam grades distribution,7 male students received a grade between 70 - 80 on the exam
 70 - 80 # number of female students # 10 # exam grades distribution,10 female students received a grade between 70 - 80 on the exam
 failed # total # 51 # exam grades distribution,51 students have failed the exam
-bubblesort.java # description # implementation of the bubble sort algorithm for sorting an array # description of the 10 original java classes in the generated dataset,the description of the file bubblesort.java is: implementation of the bubble sort algorithm for sorting an array
-bubblesort.java # # fields # 5 # description of the 10 original java classes in the generated dataset,the class bubblesort contains 5 fields
+bubbleSort.java # description # implementation of the Bubble sort algorithm for sorting an array # description of the 10 original java classes in the generated dataset,the description of the file bubbleSort.java is: implementation of the Bubble sort algorithm for sorting an array
+bubbleSort.java # # fields # 5 # description of the 10 original java classes in the generated dataset,the class bubbleSort contains 5 fields
+robert lee # year # 2011 # Cancer Death - Data,robert lee died from cancer in 2011
+robert lee # nationality # expatriate # Cancer Death - Data,robert lee's nationality is expatriate
+robert lee # gender # male # Cancer Death - Data,robert lee is male
+robert lee # cancer site # leukaemia # Cancer Death - Data,robert lee died from leukemia cancer
+robert lee # age # 30 # Cancer Death - Data,robert lee was 30 when he died
+jacob # rank # 1 # table of baby names data,jacob is the number 1 ranked baby name
+jacob # gender # boy # table of baby names data,jacob is a boy's name
+jacob # year # 2010 # table of baby names data,jacob is a baby name from the year 2010
+2021 # Females - Rank 1 # Olivia # Top Five Names for Births in 1922-2021,olivia is the number 1 ranked name for a female in 2021
+2021 # Females - Rank 2 # Emma # Top Five Names for Births in 1922-2021,Emma is the number 2 ranked name for a female in 2021
+2021 # Males - Rank 1 # Liam # Top Five Names for Births in 1922-2021,Liam is the number 1 ranked name for a male in 2021
+2021 # Males - Rank 2 # Noah # Top Five Names for Births in 1922-2021,Noah is the number 2 ranked name for a male in 2021
+bill # last name # jacob # Dating application users,bill's last name is jacob
+bill # age # 24 # Dating application users,bill is 24 years old
+bill # profile visits # 44 # Dating application users,bill's profile was visited 44 times
+bill # status # single # Dating application users,bill's relationship status is single
+mouse # price # 50$ # office equipment sales,mouse costs 50$
+Laptop # order date # 15/01/2018 # office equipment sales,laptop was ordered on 1/15/2018
+pistachio # dislike # 9 # ice cream preferences,9 people disliked the pistachio flavour
+pistachio # like # 20 # ice cream preferences,20 people liked the pistachio flavour
+pistachio # number of calories in 1 scoop # 104 # ice cream preferences,there are 104 calories in 1 scoop of pistachio ice cream
+shoe # gender # woman # shoes stock,the shoe is for women
+shoe # quantity sold # 45 # shoes stock,45 shoes were sold
+shoe # price # 20 # shoes stock,the shoe price is 20 
+Audi # model # A1 # cars found in harry's garage,the audi's model is A1
+Audi # mileage # 68050 # cars found in harry's garage,the Audi has covered 68050 miles
+Audi # number # 195584po # cars found in harry's garage,the audi's plate number is 195584po
+Audi # year # 2020 # cars found in harry's garage,the audi's model year is 2020
+brandon stanley # number of active portfolios # 20 # client information,brandon stanley has 20 active portfolios
+victoria porter # customer since # 04/09/1995 # client information,victoria porter is a customer since 4/9/1995
+jake clode # posts  # 70 # social media insights,jake clode uploaded 70 posts
+jake clode # total likes received # 800 # social media insights,jake clode received 800 likes in total
+jake clode # # of comments reported # 0 # social media insights,0 of jake clode's social media activities has been reported
+jeans # best seller # purple # clothing sales data,the best seller jeans color is purple
+"jeans # available types # loose fit, slim fit, skinny fit # clothing sales data","the available types of jeans are: loose fit, slim fit, skinny fit"
+jeans # best season # winter # clothing sales data,the best season to sell jeans is winter
+jeans # age group # 18-34 # clothing sales data,ages 18-34 buy the most jeans
+jeans # most popular among # women # clothing sales data,jeans are the most popular among women
+elton john # album # Captain Fantastic and the Brown Dirt Cowboy # best albums of all time,elton john's best album is Captain Fantastic and the Brown Dirt Cowboy
+"elton john # spotify listeners # 8,000,000 # best albums of all time","elton john's best album has 8,000,000 listeners on spotify "
+"elton john # year # 1,975 # best albums of all time",elton john's best album was released in 1975
+elton john # sales (in millions) # 30 # best albums of all time,elton john's best album sold 30 million copies 
+"organic apples # syudy counties # FR, IT, HU # the market for organic apple, milk and pasta in the eight study countries","organic apples' market was studied in FR, IT, HU"
+"organic milk # target market # mainly internal # the market for organic apple, milk and pasta in the eight study countries",organic apples' target market is mainly internal
+"organic milk # sale channels # mainly supermarkets # the market for organic apple, milk and pasta in the eight study countries",supermarkets are the main sale channels for organic apples
+"organic pasta # level of chain integration # generally low, except in italy, where farmer cooperatoves are common, sometimes undertaking process as well # the market for organic apple, milk and pasta in the eight study countries","organic pasta's level of chain integration is generally low, except in italy, where farmer cooperatoves are common, sometimes undertaking process as well"
+The Tonight Show Starring Jimmy Fallon # rating # 21.5 # tv shows comparison,The Tonight Show Starring Jimmy Fallon has 21.5 rating
+The Tonight Show Starring Jimmy Fallon # genre # talk show # tv shows comparison,The Tonight Show Starring Jimmy Fallon is a talk show
+The Tonight Show Starring Jimmy Fallon # tweeter followers (in millions) # 51.3 # tv shows comparison,The Tonight Show Starring Jimmy Fallon has 51.3 million tweeter followers
+The Tonight Show Starring Jimmy Fallon # is reality show # no # tv shows comparison,The Tonight Show Starring Jimmy Fallon is not a reality show
+carakukly # ticket price # 105 # music concerts,a ticket for carakukly concert costs 105
+carakukly # duration # 2 hrs # music concerts,carakukly concert is 2 hrs long
+carakukly # most popular song # butterflies # music concerts,carakukly's most popular song is butterflies
+easyJet  # number of destinations # 51 # airline companies comperison,easyJet flies to 51 destinations
+easyJet  # service ranking # 4.2 # airline companies comperison,easyJet got a ranking of 4.2 in service 
+easyJet  # number of flights a week # 70 # airline companies comperison,easyJet operates 70 flights a week
+easyJet  # low-cost # yes  # airline companies comperison,easyJet is a low-cost airline
+easyJet  # headquarters # Amsterdam # airline companies comperison,easyJet's headquarters are in Amsterdam
+easyJet # parent company  # united # airline companies comperison,United is the parent company of easyJet
+easyJet # delay probability # 0.4 # airline companies comperison,the probability for a delay in easyJet flights is 0.4
+easyJet # annual revenue # 150m # airline companies comperison,easyJet's annual revenue is 150m
+"math # 1 year of experience # 5,000 # teachers average salary","math teacher salary after 1 year of experience is 5,000"
+"math # 10 years or more of experience  # 10,000 # teachers average salary","math teacher salary after 10 years or more of experience is 10,000"
+math # central district # highest # teachers average salary,the salary of a math teacher from the central district is the highest
+math # southern district # lowest # teachers average salary,the salary of a math teacher from the shothern district is the lowest

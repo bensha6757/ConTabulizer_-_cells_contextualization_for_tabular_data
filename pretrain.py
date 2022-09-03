@@ -3,6 +3,7 @@ from pytorch_lightning.loggers import WandbLogger
 import fairscale
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.utils.data import DataLoader
+import wandb
 
 from datasets import DatasetsWrapper
 from model.model import ConTabulizer, ConTabulizerForGeneration
@@ -33,13 +34,13 @@ class PlConTabulizer(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         dataset_holder_dict = batch
         loss, outputs = self(dataset_holder_dict)
-        self.log("train loss", loss, prog_bar=True, logger=True)
+        self.log("train loss", loss, prog_bar=True, logger=True, batch_size=1)
         return loss
 
     def validation_step(self, batch, batch_idx):
         dataset_holder_dict = batch
         loss, outputs = self(dataset_holder_dict)
-        self.log("val loss", loss, prog_bar=True, logger=True)
+        self.log("val loss", loss, prog_bar=True, logger=True, batch_size=1)
         return loss
 
     def configure_optimizers(self):
@@ -77,7 +78,7 @@ if __name__ == '__main__':
     datasets_dir = 'train-data/csvs'
     number_of_records_per_crop = 10
     is_shuffle = True
-    # wandb.init(project="contabulizer")
+    wandb.init(project="contabulizer")
 
     table_data_module = TableDataModule(datasets_path=datasets_dir,
                                         number_of_records_per_crop=number_of_records_per_crop,
@@ -100,7 +101,7 @@ if __name__ == '__main__':
              f"{template_encoder_name}-{input_dim}-{hidden_dim}-{num_transformer_blocks}-{heads}-{row_dim_head}-"
              f"{table_dim_head}-{attn_dropout}-{ff_dropout}",
         project="ConTabulizer",
-        entity="bensha"
+        entity="roicohen9"
     )
 
     val_loss_checkpoint_callback = ModelCheckpoint(monitor="val loss", mode="min")

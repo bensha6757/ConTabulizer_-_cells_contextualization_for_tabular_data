@@ -56,8 +56,8 @@ class Embedder(nn.Module):
             generation_output = self.template_generator.generate(
                 input_ids=source_encoding['input_ids'].to(self.device),
                 attention_mask=source_encoding['attention_mask'].to(self.device),
-                num_beams=1,
-                max_length=10,
+                num_beams=4,
+                max_length=25,
                 repetition_penalty=2.5,
                 length_penalty=1.0,
                 early_stopping=True,
