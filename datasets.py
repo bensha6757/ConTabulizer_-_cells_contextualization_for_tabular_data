@@ -9,8 +9,10 @@ import numpy as np
 
 
 class DatasetHolder:
-    def __init__(self, table_name, path=None, row_names=None, col_names=None, table_content=None, max_col_amount=5):
+    def __init__(self, table_name, path=None, row_names=None, col_names=None, table_content=None, max_col_amount=5,
+                 is_pretrain=True):
         self.table_name = table_name
+        self.is_pretrain = is_pretrain
         if table_content is not None:
             self.row_names = row_names
             self.col_names = col_names[:max_col_amount]
@@ -39,7 +41,9 @@ class DatasetHolder:
     def get_dataset_holder_crop(self, start, end):
         cropped_row_names = self.row_names[start: end]
         cropped_table_content = self.table_content[start: end]
-        label = mask_table_content(cropped_table_content, number_of_masks=len(cropped_row_names))
+        label = mask_table_content(cropped_table_content=cropped_table_content,
+                                   number_of_masks=len(cropped_row_names),
+                                   is_pretrain=self.is_pretrain)
         return {
             'table_name': self.table_name,
             'row_names': cropped_row_names,
@@ -68,11 +72,12 @@ class DatasetCropper(Dataset):
 
 
 class DatasetsWrapper(Dataset):
-    def __init__(self, datasets_path, number_of_records_per_crop, train_or_val, is_shuffle=True):
+    def __init__(self, datasets_path, number_of_records_per_crop, train_or_val, is_shuffle=True, is_pretrain=True):
         self.datasets = []
         self.number_of_records_per_crop = number_of_records_per_crop
         self.is_shuffle = is_shuffle
         self.train_or_val = train_or_val
+        self.is_pretrain = is_pretrain
 
         self.read_datasets(datasets_path)
 
@@ -97,17 +102,21 @@ class DatasetsWrapper(Dataset):
                     for file_name in files:
                         if file_name.endswith('.csv') and self.train_or_val in file_name:
                             dataset_holder = DatasetHolder(table_name=dataset_dir.replace('-', ' '),
-                                                           path=os.path.join(prefix_dir, file_name))
+                                                           path=os.path.join(prefix_dir, file_name),
+                                                           is_pretrain=self.is_pretrain)
                             dataset_cropper = DatasetCropper(dataset_holder=dataset_holder,
                                                              number_of_records_per_crop=self.number_of_records_per_crop,
                                                              is_shuffle=self.is_shuffle)
                             self.datasets.append(dataset_cropper)
 
 
-def mask_table_content(cropped_table_content, number_of_masks):
+def mask_table_content(cropped_table_content, number_of_masks, is_pretrain):
     num_rows, num_cols = len(cropped_table_content), len(cropped_table_content[0])
-    mask_idxs = random.sample([(i, j) for i in range(num_rows) for j in range(num_cols)], number_of_masks)
-    mask_idxs.sort()
+    if is_pretrain:
+        mask_idxs = random.sample([(i, j) for i in range(num_rows) for j in range(num_cols)], number_of_masks)
+        mask_idxs.sort()
+    else:
+        mask_idxs = [(i, num_cols - 1) for i in range(num_rows)]
     label = ''
     mask_counter = 0
     for i, j in mask_idxs:

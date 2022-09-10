@@ -78,15 +78,15 @@ class TableDataModule(pl.LightningDataModule):
 
 
 if __name__ == '__main__':
-    datasets_dir = 'train-data/csvs'
+    datasets_dir = 'benchmark-data/benchmark1'
     number_of_records_per_crop = 5
     is_shuffle = True
-    wandb.init(project="contabulizer")
+    wandb.init(project="contabulizer_fine_tuning")
 
     table_data_module = TableDataModule(datasets_path=datasets_dir,
                                         number_of_records_per_crop=number_of_records_per_crop,
                                         is_shuffle=is_shuffle,
-                                        is_pretrain=True)
+                                        is_pretrain=False)
     model = PlConTabulizer(t5_for_generation=t5_for_generation,
                            finetuned_t5_for_template_generation=finetuned_t5_for_template_generation,
                            template_tokenizer_name=template_tokenizer_name,
@@ -104,7 +104,7 @@ if __name__ == '__main__':
         name=f"{t5_for_generation}-{finetuned_t5_for_template_generation}-{template_tokenizer_name}-"
              f"{template_encoder_name}-{input_dim}-{hidden_dim}-{num_transformer_blocks}-{heads}-{row_dim_head}-"
              f"{table_dim_head}-{attn_dropout}-{ff_dropout}",
-        project="ConTabulizer",
+        project="ConTabulizer_benchmarking",
         entity="roicohen9"
     )
 
@@ -121,6 +121,6 @@ if __name__ == '__main__':
         # precision=16,
         logger=wandb_logger,
         callbacks=[val_loss_checkpoint_callback],
-        default_root_dir='./checkpoints/'
+        default_root_dir='./checkpoints/benchmarks'
     )
     trainer.fit(model, table_data_module)
