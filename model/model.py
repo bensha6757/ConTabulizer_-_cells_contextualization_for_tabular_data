@@ -123,6 +123,34 @@ class ConTabulizerForGeneration(nn.Module):
         x = x.unsqueeze(0).to(self.device)
         return self.t5_model(inputs_embeds=x, encoder_outputs=[x], labels=tokenized_labels)
 
+    def generate(self, dataset_holder_dict):
+        x = self.embedder(dataset_holder_dict)
+        x = self.model(x)
+        tokenized_labels = self.tokenizer(dataset_holder_dict['label'], padding=True, return_tensors='pt').input_ids.to(self.device)
+        x = x.view(-1, x.shape[-1])
+        x = x.unsqueeze(0).to(self.device)
+
+        generation_output = self.template_generator.generate(
+            inputs_embeds=x,
+            encoder_outputs=[x],
+            num_beams=4,
+            max_length=25,
+            repetition_penalty=2.5,
+            length_penalty=1.0,
+            early_stopping=True,
+            use_cache=True,
+            return_dict_in_generate=True,
+        )
+        generated_ids = generation_output.sequences.to(self.device)
+        preds = [
+            self.template_generator_tokenizer.decode(generated_id,
+                                                     skip_special_tokens=True,
+                                                     clean_up_tokenization_spaces=True)
+            for generated_id in generated_ids
+        ]
+
+        return preds
+
     @staticmethod
     def get_curr_device():
         use_cuda = torch.cuda.is_available()
