@@ -145,7 +145,7 @@ if __name__ == '__main__':
 
     val_loss_checkpoint_callback = ModelCheckpoint(monitor="val loss", mode="min")
 
-    gpus = 1
+    gpus = 0
     train_strategy = 'ddp_sharded'
 
     trainer = pl.Trainer(

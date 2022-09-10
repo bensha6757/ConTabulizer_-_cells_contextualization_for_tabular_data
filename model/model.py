@@ -130,7 +130,7 @@ class ConTabulizerForGeneration(nn.Module):
         x = x.view(-1, x.shape[-1])
         x = x.unsqueeze(0).to(self.device)
 
-        generation_output = self.template_generator.generate(
+        generation_output = self.t5_model.generate(
             inputs_embeds=x,
             encoder_outputs=[x],
             num_beams=4,
