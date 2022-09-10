@@ -9,13 +9,15 @@ import numpy as np
 
 
 class DatasetHolder:
-    def __init__(self, table_name, path=None, row_names=None, col_names=None, table_content=None, max_col_amount=5,
+    def __init__(self, table_name, path=None, row_names=None, col_names=None, table_content=None, max_col_amount=7,
                  is_pretrain=True):
         self.table_name = table_name
         self.is_pretrain = is_pretrain
         if table_content is not None:
             self.row_names = row_names
             self.col_names = col_names[:max_col_amount]
+            if max_col_amount < len(col_names):
+                self.col_names.append(col_names[-1])
             self.table_content = table_content
         else:
             self.row_names = []
@@ -29,6 +31,8 @@ class DatasetHolder:
                     else:
                         self.row_names.append(row[0])
                         self.table_content.append(row[1:max_col_amount])
+                        if max_col_amount < len(row):
+                            self.table_content[-1].append(row[-1])
 
     def __len__(self):
         return len(self.row_names)
@@ -51,8 +55,6 @@ class DatasetHolder:
             'table_content': cropped_table_content,
             'label': label
         }
-        # return DatasetHolder(self.table_name, row_names=cropped_row_names, col_names=self.col_names,
-        #                      table_content=cropped_table_content)
 
 
 class DatasetCropper(Dataset):
@@ -142,8 +144,8 @@ def split_train_val_test(datasets_path, frac=0.8):
 
                         train = df[msk]
                         val = df[~msk]
-                        train.to_csv(os.path.join(prefix_dir, 'train.csv'), encoding='utf-8')
-                        val.to_csv(os.path.join(prefix_dir, 'val.csv'), encoding='utf-8')
+                        train.to_csv(os.path.join(prefix_dir, 'train.csv'), encoding='utf-8', index=False)
+                        val.to_csv(os.path.join(prefix_dir, 'val.csv'), encoding='utf-8', index=False)
 
 
 if __name__ == '__main__':
