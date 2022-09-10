@@ -18,7 +18,7 @@ from pretrain_config import t5_for_generation, finetuned_t5_for_template_generat
 class PlConTabulizer(pl.LightningModule):
     def __init__(self, t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name,
                  input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout,
-                 *args, **kwargs):
+                 dev_set, *args, **kwargs):
         super().__init__(*args, **kwargs)
         embedder = Embedder(finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name).to(self.device)
         contabulizer_model = ConTabulizer(input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head,
@@ -27,6 +27,7 @@ class PlConTabulizer(pl.LightningModule):
         t5_tokenizer = T5Tokenizer.from_pretrained(t5_for_generation)
         self.model = ConTabulizerForGeneration(embedder=embedder, model=contabulizer_model,
                                                t5_model=t5_model, tokenizer=t5_tokenizer)
+        self.dev_set = dev_set
 
     def forward(self, dataset_holder_dict):
         output = self.model(dataset_holder_dict)
@@ -52,6 +53,42 @@ class PlConTabulizer(pl.LightningModule):
             scale_parameter=False,
             warmup_init=False
         )
+
+    def validation_step_end(self, outputs):
+        em, f1 = self.compute_dev_acc(self.dev_set)
+        self.log("val_em", em, prog_bar=True, logger=True)
+        self.log("val_f1", f1, prog_bar=True, logger=True)
+
+    def compute_dev_acc(self, dev_set):
+        exact_answers = 0
+        avg_precision = 0
+        avg_recall = 0
+        for i, example in enumerate(dev_set):
+            label = example['label']
+            pred = self.model.generate(example)[0]
+
+            if pred == label:
+                exact_answers += 1
+
+            precision = 0
+            for p in pred:
+                if p in label:
+                    precision += 1
+            precision /= len(pred)
+            avg_precision += precision
+
+            recall = 0
+            for g in label:
+                if g in pred:
+                    recall += 1
+            recall /= len(label)
+            avg_recall += recall
+
+        exact_match = exact_answers / len(dev_set)
+        avg_precision /= len(dev_set)
+        avg_recall /= len(dev_set)
+        avg_f1 = 2 * ((avg_precision * avg_recall) / (avg_precision + avg_recall))
+        return exact_match, avg_f1
 
 
 class TableDataModule(pl.LightningDataModule):
