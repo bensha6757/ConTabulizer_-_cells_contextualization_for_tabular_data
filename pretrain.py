@@ -12,7 +12,7 @@ from embed import Embedder
 from transformers import T5ForConditionalGeneration, T5Tokenizer, Adafactor
 from pretrain_config import t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, \
     template_encoder_name, input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, \
-    attn_dropout, ff_dropout
+    attn_dropout, ff_dropout, datasets_dir, number_of_records_per_crop, is_shuffle, checkpoint_dir
 
 
 class PlConTabulizer(pl.LightningModule):
@@ -115,9 +115,6 @@ class TableDataModule(pl.LightningDataModule):
 
 
 if __name__ == '__main__':
-    datasets_dir = 'train-data/csvs'
-    number_of_records_per_crop = 5
-    is_shuffle = True
     wandb.init(project="contabulizer")
 
     table_data_module = TableDataModule(datasets_path=datasets_dir,
@@ -159,6 +156,6 @@ if __name__ == '__main__':
         # precision=16,
         logger=wandb_logger,
         callbacks=[val_loss_checkpoint_callback],
-        default_root_dir='./checkpoints/'
+        default_root_dir=checkpoint_dir
     )
     trainer.fit(model, table_data_module)
