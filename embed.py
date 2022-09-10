@@ -1,4 +1,4 @@
-from transformers import T5ForConditionalGeneration, BertModel, BertTokenizer, T5Tokenizer
+from transformers import T5ForConditionalGeneration, BertModel, BertTokenizer, T5Tokenizer, AutoTokenizer, AutoModel
 import torch
 from datasets import DatasetHolder
 from torch import nn
@@ -8,10 +8,11 @@ class Embedder(nn.Module):
     def __init__(self, finetuned_t5_for_template_generation, tokenizer_name, template_encoder_name):
         super().__init__()
         self.device = self.get_curr_device()
-        self.template_generator = T5ForConditionalGeneration.from_pretrained(finetuned_t5_for_template_generation).to(self.device)
+        self.template_generator = T5ForConditionalGeneration.from_pretrained(finetuned_t5_for_template_generation)
+        self.template_generator = self.template_generator.to(self.device)
         self.template_generator_tokenizer = T5Tokenizer.from_pretrained(tokenizer_name)
-        self.encoder = BertModel.from_pretrained(template_encoder_name).to(self.device)
-        self.encoder_tokenizer = BertTokenizer.from_pretrained(template_encoder_name)
+        self.encoder = AutoModel.from_pretrained(template_encoder_name).to(self.device)
+        self.encoder_tokenizer = AutoTokenizer.from_pretrained(template_encoder_name)
 
         new_masks_dict = {'additional_special_tokens': ['[extra_id_1]', '[extra_id_2]', '[extra_id_3]', '[extra_id_4]',
                                                         '[extra_id_5]', '[extra_id_6]', '[extra_id_7]', '[extra_id_8]',
@@ -26,11 +27,16 @@ class Embedder(nn.Module):
     def generate_encoding(self, table_content):
         encodings_by_row = []
         for row in table_content:
-            tokenized_row = self.encoder_tokenizer.batch_encode_plus(row,
+            tokenizer_output = self.encoder_tokenizer.batch_encode_plus(row,
                                                                      padding='max_length',
+                                                                     truncation=True,
                                                                      return_tensors='pt',
-                                                                     add_special_tokens=True).input_ids
-            last_hidden_state = self.encoder(tokenized_row).last_hidden_state
+                                                                     add_special_tokens=True)
+            input_ids = tokenizer_output.input_ids
+            input_ids = input_ids.to(self.device)
+            attention_mask = tokenizer_output.attention_mask
+            attention_mask = attention_mask.to(self.device)
+            last_hidden_state = self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
             entries_encoding = last_hidden_state[:, 0, :].squeeze(1).unsqueeze(0)
             encodings_by_row.append(entries_encoding)
         embedded_input = torch.stack(encodings_by_row, dim=0).squeeze(1)
@@ -53,9 +59,14 @@ class Embedder(nn.Module):
                                                                                   padding='max_length',
                                                                                   return_tensors='pt',
                                                                                   add_special_tokens=True)
+            input_ids = source_encoding.input_ids
+            input_ids = input_ids.to(self.device)
+            attention_mask = source_encoding.attention_mask
+            attention_mask = attention_mask.to(self.device)
+
             generation_output = self.template_generator.generate(
-                input_ids=source_encoding['input_ids'].to(self.device),
-                attention_mask=source_encoding['attention_mask'].to(self.device),
+                input_ids=input_ids,
+                attention_mask=attention_mask,
                 num_beams=4,
                 max_length=25,
                 repetition_penalty=2.5,
@@ -64,7 +75,7 @@ class Embedder(nn.Module):
                 use_cache=True,
                 return_dict_in_generate=True,
             )
-            generated_ids = generation_output.sequences
+            generated_ids = generation_output.sequences.to(self.device)
             preds = [
                 self.template_generator_tokenizer.decode(generated_id,
                                                          skip_special_tokens=True,

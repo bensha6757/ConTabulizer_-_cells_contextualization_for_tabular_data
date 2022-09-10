@@ -9,11 +9,11 @@ import numpy as np
 
 
 class DatasetHolder:
-    def __init__(self, table_name, path=None, row_names=None, col_names=None, table_content=None):
+    def __init__(self, table_name, path=None, row_names=None, col_names=None, table_content=None, max_col_amount=5):
         self.table_name = table_name
         if table_content is not None:
             self.row_names = row_names
-            self.col_names = col_names
+            self.col_names = col_names[:max_col_amount]
             self.table_content = table_content
         else:
             self.row_names = []
@@ -26,7 +26,7 @@ class DatasetHolder:
                         self.col_names = row[1:]
                     else:
                         self.row_names.append(row[0])
-                        self.table_content.append(row[1:])
+                        self.table_content.append(row[1:max_col_amount])
 
     def __len__(self):
         return len(self.row_names)

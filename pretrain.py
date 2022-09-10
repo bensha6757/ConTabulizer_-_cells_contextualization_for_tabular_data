@@ -4,6 +4,7 @@ import fairscale
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.utils.data import DataLoader
 import wandb
+import torch
 
 from datasets import DatasetsWrapper
 from model.model import ConTabulizer, ConTabulizerForGeneration
@@ -19,10 +20,10 @@ class PlConTabulizer(pl.LightningModule):
                  input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
-        embedder = Embedder(finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name)
+        embedder = Embedder(finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name).to(self.device)
         contabulizer_model = ConTabulizer(input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head,
-                                          table_dim_head, attn_dropout, ff_dropout)
-        t5_model = T5ForConditionalGeneration.from_pretrained(t5_for_generation)
+                                          table_dim_head, attn_dropout, ff_dropout).to(self.device)
+        t5_model = T5ForConditionalGeneration.from_pretrained(t5_for_generation).to(self.device)
         t5_tokenizer = T5Tokenizer.from_pretrained(t5_for_generation)
         self.model = ConTabulizerForGeneration(embedder=embedder, model=contabulizer_model,
                                                t5_model=t5_model, tokenizer=t5_tokenizer)
@@ -76,7 +77,7 @@ class TableDataModule(pl.LightningDataModule):
 
 if __name__ == '__main__':
     datasets_dir = 'train-data/csvs'
-    number_of_records_per_crop = 10
+    number_of_records_per_crop = 5
     is_shuffle = True
     wandb.init(project="contabulizer")
 
@@ -116,6 +117,7 @@ if __name__ == '__main__':
         strategy=train_strategy,
         # precision=16,
         logger=wandb_logger,
-        callbacks=[val_loss_checkpoint_callback]
+        callbacks=[val_loss_checkpoint_callback],
+        default_root_dir='./checkpoints/'
     )
     trainer.fit(model, table_data_module)
