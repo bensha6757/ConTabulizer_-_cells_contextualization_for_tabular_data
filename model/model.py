@@ -5,6 +5,8 @@ import pandas
 import torch
 from einops import rearrange
 from torch import nn, einsum
+from transformers import T5Tokenizer
+from transformers.utils import ModelOutput
 
 
 class Residual(nn.Module):
@@ -114,6 +116,7 @@ class ConTabulizerForGeneration(nn.Module):
         self.model = model
         self.t5_model = t5_model
         self.tokenizer = tokenizer
+        self.template_generator_tokenizer = T5Tokenizer.from_pretrained('t5-small')
 
     def forward(self, dataset_holder_dict):
         x = self.embedder(dataset_holder_dict)
@@ -130,9 +133,11 @@ class ConTabulizerForGeneration(nn.Module):
         x = x.view(-1, x.shape[-1])
         x = x.unsqueeze(0).to(self.device)
 
+        outputs = ModelOutput()
+        outputs["last_hidden_state"] = x
         generation_output = self.t5_model.generate(
             inputs_embeds=x,
-            encoder_outputs=[x],
+            encoder_outputs=outputs,
             num_beams=4,
             max_length=25,
             repetition_penalty=2.5,

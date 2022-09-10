@@ -133,7 +133,7 @@ if __name__ == '__main__':
                            table_dim_head=table_dim_head,
                            attn_dropout=attn_dropout,
                            ff_dropout=ff_dropout,
-                           dev_set=table_data_module.dev_set)
+                           dev_set=DataLoader(table_data_module.dev_set, batch_size=1))
 
     wandb_logger = WandbLogger(
         name=f"{t5_for_generation}-{finetuned_t5_for_template_generation}-{template_tokenizer_name}-"
