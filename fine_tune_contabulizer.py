@@ -10,71 +10,11 @@ from datasets import DatasetsWrapper
 from model.model import ConTabulizer, ConTabulizerForGeneration
 from embed import Embedder
 from transformers import T5ForConditionalGeneration, T5Tokenizer, Adafactor
+
+from pretrain import TableDataModule, PlConTabulizer
 from pretrain_config import t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, \
     template_encoder_name, input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, \
     attn_dropout, ff_dropout
-
-
-class PlConTabulizer(pl.LightningModule):
-    def __init__(self, t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name,
-                 input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, attn_dropout, ff_dropout,
-                 *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        embedder = Embedder(finetuned_t5_for_template_generation, template_tokenizer_name, template_encoder_name).to(self.device)
-        contabulizer_model = ConTabulizer(input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head,
-                                          table_dim_head, attn_dropout, ff_dropout).to(self.device)
-        t5_model = T5ForConditionalGeneration.from_pretrained(t5_for_generation).to(self.device)
-        t5_tokenizer = T5Tokenizer.from_pretrained(t5_for_generation)
-        self.model = ConTabulizerForGeneration(embedder=embedder, model=contabulizer_model,
-                                               t5_model=t5_model, tokenizer=t5_tokenizer)
-
-    def forward(self, dataset_holder_dict):
-        output = self.model(dataset_holder_dict)
-        return output.loss, output.logits
-
-    def training_step(self, batch, batch_idx):
-        dataset_holder_dict = batch
-        loss, outputs = self(dataset_holder_dict)
-        self.log("train loss", loss, prog_bar=True, logger=True, batch_size=1)
-        return loss
-
-    def validation_step(self, batch, batch_idx):
-        dataset_holder_dict = batch
-        loss, outputs = self(dataset_holder_dict)
-        self.log("val loss", loss, prog_bar=True, logger=True, batch_size=1)
-        return loss
-
-    def configure_optimizers(self):
-        return Adafactor(
-            self.model.parameters(),
-            lr=1e-3,
-            relative_step=False,
-            scale_parameter=False,
-            warmup_init=False
-        )
-
-
-class TableDataModule(pl.LightningDataModule):
-    def __init__(self, datasets_path, number_of_records_per_crop: int = 10, batch_size: int = 1, is_shuffle=True, is_pretrain=True):
-        super(TableDataModule, self).__init__()
-
-        self.train_set = DatasetsWrapper(datasets_path=datasets_path,
-                                         number_of_records_per_crop=number_of_records_per_crop,
-                                         train_or_val='train',
-                                         is_shuffle=is_shuffle,
-                                         is_pretrain=is_pretrain)
-        self.dev_set = DatasetsWrapper(datasets_path=datasets_path,
-                                       number_of_records_per_crop=number_of_records_per_crop,
-                                       train_or_val='val',
-                                       is_shuffle=is_shuffle,
-                                       is_pretrain=is_pretrain)
-        self.batch_size = batch_size
-
-    def train_dataloader(self):
-        return DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True)
-
-    def val_dataloader(self):
-        return DataLoader(self.dev_set, batch_size=self.batch_size)
 
 
 if __name__ == '__main__':
@@ -98,7 +38,8 @@ if __name__ == '__main__':
                            row_dim_head=row_dim_head,
                            table_dim_head=table_dim_head,
                            attn_dropout=attn_dropout,
-                           ff_dropout=ff_dropout)
+                           ff_dropout=ff_dropout,
+                           dev_set=table_data_module.dev_set)
 
     wandb_logger = WandbLogger(
         name=f"{t5_for_generation}-{finetuned_t5_for_template_generation}-{template_tokenizer_name}-"

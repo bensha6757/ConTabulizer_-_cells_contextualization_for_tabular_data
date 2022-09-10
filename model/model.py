@@ -139,7 +139,7 @@ class ConTabulizerForGeneration(nn.Module):
             length_penalty=1.0,
             early_stopping=True,
             use_cache=True,
-            return_dict_in_generate=True,
+            return_dict_in_generate=True
         )
         generated_ids = generation_output.sequences.to(self.device)
         preds = [
