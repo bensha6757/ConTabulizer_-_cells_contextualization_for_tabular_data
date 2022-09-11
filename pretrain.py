@@ -12,7 +12,7 @@ from embed import Embedder
 from transformers import T5ForConditionalGeneration, T5Tokenizer, Adafactor
 from pretrain_config import t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, \
     template_encoder_name, input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, \
-    attn_dropout, ff_dropout, datasets_dir, number_of_records_per_crop, is_shuffle, checkpoint_dir
+    attn_dropout, ff_dropout, datasets_dir, number_of_records_per_crop, is_shuffle, checkpoint_dir, is_pretrain
 
 
 class PlConTabulizer(pl.LightningModule):
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     table_data_module = TableDataModule(datasets_path=datasets_dir,
                                         number_of_records_per_crop=number_of_records_per_crop,
                                         is_shuffle=is_shuffle,
-                                        is_pretrain=True)
+                                        is_pretrain=is_pretrain)
     model = PlConTabulizer(t5_for_generation=t5_for_generation,
                            finetuned_t5_for_template_generation=finetuned_t5_for_template_generation,
                            template_tokenizer_name=template_tokenizer_name,

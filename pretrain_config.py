@@ -15,3 +15,4 @@ datasets_dir = 'benchmark-data/benchmark1'
 number_of_records_per_crop = 5
 is_shuffle = True
 checkpoint_dir = './checkpoints/benchmark1'
+is_pretrain = False
