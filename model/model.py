@@ -129,7 +129,6 @@ class ConTabulizerForGeneration(nn.Module):
     def generate(self, dataset_holder_dict):
         x = self.embedder(dataset_holder_dict)
         x = self.model(x)
-        tokenized_labels = self.tokenizer(dataset_holder_dict['label'], padding=True, return_tensors='pt').input_ids.to(self.device)
         x = x.view(-1, x.shape[-1])
         x = x.unsqueeze(0).to(self.device)
 
