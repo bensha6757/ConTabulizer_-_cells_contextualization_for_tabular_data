@@ -64,30 +64,36 @@ class PlConTabulizer(pl.LightningModule):
         avg_precision = 0
         avg_recall = 0
         for i, example in enumerate(dev_set):
-            label = example['label']
+            label = example['label'][0]
             pred = self.model.generate(example)[0]
+            if not i % 10:
+                print(f'{pred}\n{label}\n')
+
+            pred_words = pred.split()
+            label_words = label.split()
 
             if pred == label:
                 exact_answers += 1
 
             precision = 0
-            for p in pred:
-                if p in label:
+            for p in pred_words:
+                if p in label_words:
                     precision += 1
-            precision /= len(pred)
+            precision /= len(pred_words) if pred_words else 1.0
             avg_precision += precision
 
             recall = 0
-            for g in label:
-                if g in pred:
+            for g in label_words:
+                if g in pred_words:
                     recall += 1
-            recall /= len(label)
+            recall /= len(label_words) if label_words else 1.0
             avg_recall += recall
 
         exact_match = exact_answers / len(dev_set)
         avg_precision /= len(dev_set)
         avg_recall /= len(dev_set)
-        avg_f1 = 2 * ((avg_precision * avg_recall) / (avg_precision + avg_recall))
+        avg_f1 = 2 * ((avg_precision * avg_recall) / (avg_precision + avg_recall)) \
+            if avg_precision > 0 and avg_recall > 0 else 0
         return exact_match, avg_f1
 
 
@@ -121,19 +127,25 @@ if __name__ == '__main__':
                                         number_of_records_per_crop=number_of_records_per_crop,
                                         is_shuffle=is_shuffle,
                                         is_pretrain=is_pretrain)
-    model = PlConTabulizer(t5_for_generation=t5_for_generation,
-                           finetuned_t5_for_template_generation=finetuned_t5_for_template_generation,
-                           template_tokenizer_name=template_tokenizer_name,
-                           template_encoder_name=template_encoder_name,
-                           input_dim=input_dim,
-                           hidden_dim=hidden_dim,
-                           num_transformer_blocks=num_transformer_blocks,
-                           heads=heads,
-                           row_dim_head=row_dim_head,
-                           table_dim_head=table_dim_head,
-                           attn_dropout=attn_dropout,
-                           ff_dropout=ff_dropout,
-                           dev_set=DataLoader(table_data_module.dev_set, batch_size=1))
+    ckpt_path = './checkpoints/t5-small-./checkpoints/' \
+                'template_generator-t5-base-distilbert-base-uncased-768-512-4-8-16-16-0.1-0.1/' \
+                'version_None/checkpoints/epoch=0-step=16754.ckpt'
+    model = PlConTabulizer.load_from_checkpoint(
+           checkpoint_path=ckpt_path,
+           t5_for_generation=t5_for_generation,
+           finetuned_t5_for_template_generation=finetuned_t5_for_template_generation,
+           template_tokenizer_name=template_tokenizer_name,
+           template_encoder_name=template_encoder_name,
+           input_dim=input_dim,
+           hidden_dim=hidden_dim,
+           num_transformer_blocks=num_transformer_blocks,
+           heads=heads,
+           row_dim_head=row_dim_head,
+           table_dim_head=table_dim_head,
+           attn_dropout=attn_dropout,
+           ff_dropout=ff_dropout,
+           dev_set=DataLoader(table_data_module.dev_set, batch_size=1)
+    )
 
     wandb_logger = WandbLogger(
         name=f"{t5_for_generation}-{finetuned_t5_for_template_generation}-{template_tokenizer_name}-"
@@ -145,7 +157,7 @@ if __name__ == '__main__':
 
     val_loss_checkpoint_callback = ModelCheckpoint(monitor="val loss", mode="min")
 
-    gpus = 0
+    gpus = 1
     train_strategy = 'ddp_sharded'
 
     trainer = pl.Trainer(

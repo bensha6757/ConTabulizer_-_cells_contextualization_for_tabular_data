@@ -116,7 +116,7 @@ class ConTabulizerForGeneration(nn.Module):
         self.model = model
         self.t5_model = t5_model
         self.tokenizer = tokenizer
-        self.template_generator_tokenizer = T5Tokenizer.from_pretrained('t5-small')
+        self.template_generator_tokenizer = T5Tokenizer.from_pretrained('t5-base')
 
     def forward(self, dataset_holder_dict):
         x = self.embedder(dataset_holder_dict)
