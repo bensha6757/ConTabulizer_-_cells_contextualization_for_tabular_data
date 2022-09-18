@@ -67,7 +67,7 @@ class PlConTabulizer(pl.LightningModule):
             label = example['label'][0]
             pred = self.model.generate(example)[0]
             if not i % 10:
-                print(f'{pred}\n{label}\n')
+                print(f'pred: {pred}\n\nlabel: {label}\n')
 
             pred_words = pred.split()
             label_words = label.split()

@@ -28,7 +28,9 @@ class DatasetHolder:
                 reader = csv.reader(csvfile, delimiter=',')
                 for i, row in enumerate(reader):
                     if i == 0:
-                        self.col_names = row[1:]
+                        self.col_names = row[1:max_col_amount]
+                        if max_col_amount < len(row):
+                            self.col_names.append(row[-1])
                     else:
                         self.row_names.append(row[0])
                         self.table_content.append(row[1:max_col_amount])
