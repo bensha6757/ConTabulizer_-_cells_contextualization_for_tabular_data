@@ -6,6 +6,7 @@ from torch.utils.data import Dataset
 import csv
 import pandas as pd
 import numpy as np
+import copy
 
 
 class DatasetHolder:
@@ -45,6 +46,7 @@ class DatasetHolder:
     def get_dataset_holder_crop(self, start, end):
         cropped_row_names = self.row_names[start: end]
         cropped_table_content = self.table_content[start: end]
+        cropped_table_content = copy.deepcopy(cropped_table_content)
         label = mask_table_content(cropped_table_content=cropped_table_content,
                                    number_of_masks=len(cropped_row_names),
                                    is_pretrain=self.is_pretrain)
@@ -150,6 +152,7 @@ def split_train_val_test(datasets_path, frac=0.8):
 
 if __name__ == '__main__':
     # split_train_val_test('train-data/csvs')
-    a = [['hi', 'bi'], ['roi', 'ben'], ['hfdsaaaaaaai', 'bcdsi']]
-    d = DatasetHolder('tab', row_names=['row1', 'row2', 'row3'], col_names=['1', '2'], table_content=a)
-    print(d.get_dataset_holder_crop(0, 2))
+    a = [['hi', 'bi', 'guy', 'this1'], ['roi', 'ben','guy', 'this2'], ['hfdsaaaaaaai', 'bcdsi', 'guy', 'this3'], ['hfdsaaaaaaai', 'bcdsi', 'guy', 'this4']]
+    d = DatasetHolder('tab', row_names=['row1', 'row2', 'row3', 'row4'], col_names=['1', '2', '3', '4'], table_content=a)
+    crop = d.get_dataset_holder_crop(1, 4)
+    print(crop)
