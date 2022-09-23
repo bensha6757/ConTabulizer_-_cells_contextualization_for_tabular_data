@@ -15,9 +15,15 @@ if __name__ == '__main__':
     row = [
         "Ben Shapira # occupation # plastic surgeon # occupations",
         "Kevin Durant # height # 2.13 # NBA players",
-        "Picture3 # colors # red and blue # Tel Aviv Museum pictures",
-        "ABBA # most known song # Gimmie! Gimmie! Gimmie! # Most known songs"
+        "picture3 # colors # red and blue # Tel Aviv Museum pictures",
+        "ABBA # most known song # Gimmie! Gimmie! Gimmie! # Most known songs",
+        "table # price # 55 dollars # furniture orders",
+        "carakukly # most popular song # butterflies # music concerts",
+        "Audi # mileage # 68050 # cars found in harry's garage",
+        "vanilla # like # 12 # ice cream preferences",
+        "Alon # price # 2.9 $ # buyers list"
     ]
+    # row = [example.lower() for example in row]
 
     source_encoding = template_generator_tokenizer.batch_encode_plus(row,
                                                                      padding='max_length',

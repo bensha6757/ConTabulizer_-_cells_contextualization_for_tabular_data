@@ -54,7 +54,7 @@ class PlConTabulizer(pl.LightningModule):
             warmup_init=False
         )
 
-    def validation_step_end(self, outputs):
+    def validation_epoch_end(self, outputs):
         em, f1 = self.compute_dev_acc(self.dev_set)
         self.log("val_em", em, prog_bar=True, logger=True)
         self.log("val_f1", f1, prog_bar=True, logger=True)
@@ -130,8 +130,8 @@ if __name__ == '__main__':
     ckpt_path = './checkpoints/t5-small-./checkpoints/' \
                 'template_generator-t5-base-distilbert-base-uncased-768-512-4-8-16-16-0.1-0.1/' \
                 'version_None/checkpoints/epoch=0-step=16754.ckpt'
-    model = PlConTabulizer.load_from_checkpoint(
-           checkpoint_path=ckpt_path,
+    model = PlConTabulizer(
+           # checkpoint_path=ckpt_path,
            t5_for_generation=t5_for_generation,
            finetuned_t5_for_template_generation=finetuned_t5_for_template_generation,
            template_tokenizer_name=template_tokenizer_name,
