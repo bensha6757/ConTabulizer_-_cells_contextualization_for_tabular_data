@@ -1,5 +1,5 @@
 t5_for_generation = 't5-small'
-finetuned_t5_for_template_generation = 't5-base'
+finetuned_t5_for_template_generation = './checkpoints/template_generator'
 template_tokenizer_name = 't5-base'
 template_encoder_name = 'distilbert-base-uncased'
 input_dim = 768
