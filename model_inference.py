@@ -1,4 +1,6 @@
 from transformers import T5Tokenizer
+
+from datasets import DatasetsWrapper
 from pretrain import PlConTabulizer
 from pretrain_config import t5_for_generation, finetuned_t5_for_template_generation, template_tokenizer_name, \
     template_encoder_name, input_dim, hidden_dim, num_transformer_blocks, heads, row_dim_head, table_dim_head, \
@@ -28,14 +30,14 @@ if __name__ == '__main__':
         dev_set=''
     )
     contabulizer = model.model
-    contabulizer.save_pretrained('../checkpoints/pretrained_contabulizer')
+    # contabulizer.save_pretrained('../checkpoints/pretrained_contabulizer')
 
-    row = [
-        # list of dataset holder dicts
-    ]
+    data_wrapper = DatasetsWrapper(datasets_path='inference_data',
+                                   number_of_records_per_crop=5,
+                                   train_or_val='train',
+                                   is_shuffle=True,
+                                   is_pretrain=True)
 
-    for dataset_holder_dict in row:
-        generation_output = contabulizer.generate(
-            dataset_holder_dict
-        )
+    for i, dataset_holder_dict in enumerate(data_wrapper):
+        generation_output = contabulizer.generate(dataset_holder_dict)
         print(f"pred: {generation_output[0]}\nlabel: {dataset_holder_dict['label'][0]}\n")
